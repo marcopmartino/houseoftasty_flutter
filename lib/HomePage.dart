@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:houseoftasty/utility/SelectDrawer.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key, required this.title, required this.isLogged});
+  const HomePage({super.key, required this.isLogged});
 
-  final String title;
   final bool isLogged;
 
   @override
@@ -21,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
+        appBar: AppBar(title: Text('House of Tasty')),
         body: Center(
         ),
         drawer: SelectDrawer(isLogged: widget.isLogged),

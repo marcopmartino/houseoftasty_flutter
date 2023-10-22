@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../HomePage.dart';
@@ -8,7 +9,15 @@ class SelectDrawer extends StatelessWidget {
 
   final bool isLogged;
 
+
   Drawer drawerType(BuildContext context) {
+    signOut() async{
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(isLogged: false)));
+      }
+
     if (!isLogged) {
       return Drawer(
         child: ListView(
@@ -33,11 +42,10 @@ class SelectDrawer extends StatelessWidget {
               onTap: () {
                 // Then close the drawer
                 Navigator.pop(context);
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const HomePage(
-                          title: 'House of Tasty', isLogged: false)),
+                      builder: (context) => const HomePage(isLogged: false)),
                 );
               },
             ),
@@ -133,7 +141,9 @@ class SelectDrawer extends StatelessWidget {
                 leading: Icon(Icons.logout),
                 title: Text('Logout'),
                 onTap: () {
-                  Navigator.pop(context);
+                  signOut();
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
                 }),
           ],
         ),

@@ -23,12 +23,10 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const appTitle = 'House of Tasty';
-
   @override
   Widget build(BuildContext context) {
     var isLogged = FirebaseAuth.instance.currentUser != null;
-    return HomePage(title: appTitle, isLogged: isLogged);
+    return HomePage(isLogged: isLogged);
   }
 }
 
