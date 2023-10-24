@@ -81,4 +81,16 @@ class Validator {
 
     return null;
   }
+
+  static String? validateRequired({required String? value}){
+    if (value == null) {
+      return null;
+    }
+
+    if(value.isEmpty){
+      return 'Questo campo non può essere vuoto';
+    }
+
+    return null;
+  }
 }

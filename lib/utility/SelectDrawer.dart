@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:houseoftasty/ProductsPage.dart';
 
 import '../HomePage.dart';
 import '../LoginPage.dart';
@@ -11,12 +12,17 @@ class SelectDrawer extends StatelessWidget {
 
 
   Drawer drawerType(BuildContext context) {
+
     signOut() async{
       await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomePage(isLogged: false)));
+      if(context.mounted){
+        Navigator.pushAndRemoveUntil(context,
+            MaterialPageRoute(
+                builder: (_) => HomePage(isLogged: false)
+            ),
+                (Route route) => false);
       }
+    }
 
     if (!isLogged) {
       return Drawer(
@@ -67,6 +73,8 @@ class SelectDrawer extends StatelessWidget {
                 title: Text('Prodotti'),
                 onTap: () {
                   Navigator.pop(context);
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => ProductsPage()));
                 }),
             ListTile(
               leading: Icon(Icons.logout),
@@ -135,7 +143,8 @@ class SelectDrawer extends StatelessWidget {
                 leading: Icon(Icons.apple),
                 title: Text('Prodotti'),
                 onTap: () {
-                  Navigator.pop(context);
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => ProductsPage()));
                 }),
             ListTile(
                 leading: Icon(Icons.logout),

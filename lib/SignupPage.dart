@@ -8,7 +8,6 @@ import 'package:houseoftasty/utility/Validator.dart';
 
 import 'HomePage.dart';
 import 'LoginPage.dart';
-import 'Model/Profile.dart';
 import 'network/ProfileNetwork.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -99,7 +98,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             controller: _usernameTextController,
                             style: TextStyle(color: Colors.white),
                             decoration:
-                                CustomDecoration.inputDecoration('Username'),
+                                CustomDecoration.loginInputDecoration('Username'),
                           )), //Username
                       Padding(
                         padding: const EdgeInsets.only(
@@ -109,7 +108,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           validator: (value) =>
                               Validator.validateEmail(email: value),
                           style: TextStyle(color: Colors.white),
-                          decoration: CustomDecoration.inputDecoration('Email'),
+                          decoration: CustomDecoration.loginInputDecoration('Email'),
                         ),
                       ), //Email
                       Padding(
@@ -119,7 +118,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             controller: _nomeTextController,
                             style: TextStyle(color: Colors.white),
                             decoration:
-                                CustomDecoration.inputDecoration('Nome'),
+                                CustomDecoration.loginInputDecoration('Nome'),
                           )), //Nome
                       Padding(
                           padding: const EdgeInsets.only(
@@ -128,7 +127,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             controller: _cognomeTextController,
                             style: TextStyle(color: Colors.white),
                             decoration:
-                                CustomDecoration.inputDecoration('Cognome'),
+                                CustomDecoration.loginInputDecoration('Cognome'),
                           )), //Cognome
                       Padding(
                         padding: const EdgeInsets.only(
@@ -140,7 +139,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           style: TextStyle(color: Colors.white),
                           obscureText: true,
                           decoration:
-                              CustomDecoration.inputDecoration('Password'),
+                              CustomDecoration.loginInputDecoration('Password'),
                         ),
                       ), //Password
                       Padding(
@@ -152,7 +151,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               Validator.validateEqualPassword(password: _passwTextController.text, chkPassword: value),
                           style: TextStyle(color: Colors.white),
                           obscureText: true,
-                          decoration: CustomDecoration.inputDecoration(
+                          decoration: CustomDecoration.loginInputDecoration(
                               'Conferma password'),
                         ),
                       ), //ChkPassword
@@ -219,7 +218,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   TextStyle(color: Colors.white, fontSize: 20),
                             ),
                           ),
-                        ), //Bottone 'Accedi'
+                        ), //Bottone 'Registrati'
                         Container(
                             alignment: AlignmentDirectional.bottomCenter,
                             child: TextButton(
@@ -233,7 +232,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 child: Text(
                                     textAlign: TextAlign.center,
                                     style: TextStyle(color: Colors.white),
-                                    'Hai già un account? Accedi'))),
+                                    'Hai già un account? Accedi'))), //Text 'Accedi'
                       ],
                     ) //Bottone 'Registrati'
             ],

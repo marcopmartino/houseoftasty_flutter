@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:houseoftasty/SignupPage.dart';
 import 'package:houseoftasty/utility/AppColors.dart';
 import 'package:houseoftasty/Network/FirebaseAuthHelper.dart';
+import 'package:houseoftasty/utility/CustomDecoration.dart';
 import 'package:houseoftasty/utility/Validator.dart';
 
 import 'HomePage.dart';
@@ -90,22 +91,7 @@ class _LoginPageState extends State<LoginPage> {
                           validator: (value) =>
                               Validator.validateEmail(email: value),
                           style: TextStyle(color: Colors.white),
-                          decoration: InputDecoration(
-                              hintStyle: TextStyle(color: Colors.white),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              labelStyle: TextStyle(color: Colors.white),
-                              hintText: 'Email'),
+                          decoration: CustomDecoration.loginInputDecoration('Email'),
                         ),
                       ), //Email
                       Padding(
@@ -117,22 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                               Validator.validatePassword(password: value),
                           style: TextStyle(color: Colors.white),
                           obscureText: true,
-                          decoration: InputDecoration(
-                              hintStyle: TextStyle(color: Colors.white),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(30),
-                                borderSide: BorderSide(
-                                  color: Colors.white,
-                                ),
-                              ),
-                              labelStyle: TextStyle(color: Colors.white),
-                              hintText: 'Password'),
+                          decoration: CustomDecoration.loginInputDecoration('Password')
                         ),
                       ),
                     ],
@@ -172,8 +143,11 @@ class _LoginPageState extends State<LoginPage> {
                           print(user);
                           if (user != null && user is User) {
                             if(context.mounted) {
-                              Navigator.push(context,
-                                MaterialPageRoute(builder: (_) => HomePage(isLogged: true)));
+                              Navigator.pushAndRemoveUntil(context,
+                                MaterialPageRoute(
+                                    builder: (_) => HomePage(isLogged: true)
+                                ),
+                                (Route route) => false);
                             }
                           }else{
                             _showAlertDialog(user as String);
