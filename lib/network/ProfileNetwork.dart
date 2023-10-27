@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../Model/Profile.dart';
+import '../model/Profile.dart';
 
 class ProfileNetwork{
   static CollectionReference users = FirebaseFirestore.instance.collection('users');

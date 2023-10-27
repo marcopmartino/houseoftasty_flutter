@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:houseoftasty/utility/Extensions.dart';
+import 'package:houseoftasty/view/page/CookbookPage.dart';
 
 import 'firebase_options.dart';
 
-import 'HomePage.dart';
+import '/view/page/HomePage.dart';
 
 
 Future<void> main() async {
@@ -13,20 +15,17 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MaterialApp(
+    title: 'House of Tasty',
     theme: ThemeData(
       primarySwatch: Colors.deepOrange,
     ),
-    home: MyApp(),
+    initialRoute: '/',
+    routes: {
+      '/': (context) => HomePage(isLogged: FirebaseAuth.instance.isCurrentUserLoggedIn()),
+      CookbookPage.route: (context) => CookbookPage(),
+    },
   ));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    var isLogged = FirebaseAuth.instance.currentUser != null;
-    return HomePage(isLogged: isLogged);
-  }
-}
 
