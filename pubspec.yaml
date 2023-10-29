@@ -41,6 +41,7 @@ dependencies:
   firebase_auth: ^4.11.1
   firebase_storage: ^11.3.1
   google_fonts: ^5.1.0
+  image_picker: ^0.7.0
   intl: ^0.18.1
   provider: ^6.0.0
 
@@ -72,6 +73,7 @@ flutter:
      - assets/images/logo_medium.png
      - assets/images/user_image_default.png
      - assets/images/kitchen_background_01.jpg
+     - assets/images/carica_immagine.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

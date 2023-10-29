@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/network/RecipeNetwork.dart';
+import 'package:houseoftasty/network/StorageNetwork.dart';
 import 'package:houseoftasty/utility/AppFontWeight.dart';
 import 'package:houseoftasty/utility/Extensions.dart';
+import 'package:houseoftasty/utility/ImageLoader.dart';
+import 'package:houseoftasty/utility/OperationType.dart';
 import 'package:houseoftasty/utility/StreamBuilders.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../model/Recipe.dart';
 import '../../utility/AppColors.dart';
 import '../../utility/Navigation.dart';
@@ -13,6 +19,7 @@ import '../../view/widget/CustomScaffold.dart';
 import '../widget/CustomButtons.dart';
 import '../widget/CustomEdgeInsets.dart';
 import '../widget/TextWidgets.dart';
+import 'CookbookPage.dart';
 
 class RecipeFormPage extends StatefulWidget {
   RecipeFormPage({super.key}) {
@@ -37,8 +44,6 @@ class _RecipeFormState extends State<RecipeFormPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-
-
   final _titoloTextController = TextEditingController();
   final _ingredientiTextController = TextEditingController();
   final _numPersoneTextController = TextEditingController();
@@ -47,15 +52,53 @@ class _RecipeFormState extends State<RecipeFormPage> {
 
   bool _pubblicataSwitchValue = false;
   bool _postPrivatoSwitchValue = false;
+  bool _boolImmagine = false;
 
   bool _isProcessing = false;
   bool _initializationCompleted = false;
 
   late DocumentSnapshot<Object?> _oldData;
+  
+  Image _defaultImage = ImageLoader.asset('carica_immagine.png');
+  File? _imageFile;
+  Image? get _image => _imageFile != null ? ImageLoader.path(_imageFile!.path) : _defaultImage;
+
+  OperationType _lastOperation = OperationType.NONE;
+
+  StatefulWidget? getImage() {
+    if (_lastOperation == OperationType.NONE && _boolImmagine) {
+      return ImageLoader.firebaseRecipeStorageImage(widget.recipeId!);
+    } else {
+      return _image;
+    }
+  }
+
+  void removeImage() {
+    setState(() {
+      _lastOperation = OperationType.REMOVED;
+      _imageFile = null;
+    });
+  }
+
+  void updateImage(PickedFile? pickedFile) {
+    if (pickedFile != null) {
+      setState(() {
+        _lastOperation = OperationType.SELECTED;
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  void startLoadingAnimation() {
+    setState(() {
+      _isProcessing = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     String title = widget.newRecipe ? 'Nuova Ricetta' : 'Modifica Ricetta';
+
     if (_isProcessing) {
       return CustomScaffold(
           title: title,
@@ -72,7 +115,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  formBody(),
+                  formBody(context),
                   createButton(context),
                 ])
         )
@@ -84,7 +127,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  formBody(),
+                  formBody(context),
                   editButton(context),
                   deleteButton(context),
                 ])
@@ -104,6 +147,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
               _tempoPreparazioneTextController.text = data['tempoPreparazione'].toString();
               _pubblicataSwitchValue = data['boolPubblicata'] as bool;
               _postPrivatoSwitchValue = data['boolPostPrivato'] as bool;
+              _boolImmagine = data['boolImmagine'] as bool;
               _initializationCompleted = true;
 
               _oldData = data;
@@ -112,7 +156,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        formBody(),
+                        formBody(context),
                         editButton(context),
                         deleteButton(context),
                       ])
@@ -122,12 +166,66 @@ class _RecipeFormState extends State<RecipeFormPage> {
     }
   }
 
-  Widget formBody() {
+  Widget formBody(BuildContext context) {
     return Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+
+                // Titolo Immagine
+                Padding(
+                  padding: CustomEdgeInsets.fromLTRB(42, 32, 42, 8),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: TextWidget('Immagine',
+                      textColor: AppColors.caramelBrown,
+                      fontWeight: AppFontWeight.semiBold,
+                    ),
+                  )
+                ),
+
+                // Immagine
+                Padding(
+                  padding: CustomEdgeInsets.symmetric(horizontal: 32),
+                  child: SizedBox(
+                      width: double.infinity,
+                      height: 160,
+                      child: GestureDetector(
+                          onTap: () {
+                            ImageLoader.device(
+                                context,
+                                callback: (pickedImage) =>
+                                    updateImage(pickedImage));
+                          },
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                              child: Container(
+                                  decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 2,
+                                          color: AppColors.caramelBrown,
+                                      ),
+                                      borderRadius: BorderRadius.all(Radius.circular(20))
+                                  ),
+                                  child:getImage()
+                          )
+                      ),
+                    )
+                  )
+                ),
+
+                // Button per rimuovere l'immagine
+                if (_imageFile != null || (_lastOperation == OperationType.NONE && _boolImmagine))
+                  Padding(
+                      padding: CustomEdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      child: CustomButtons.delete(
+                          'Rimuovi Immagine',
+                          onPressed: () async {
+                            removeImage();
+                          }
+                      )
+                  ),
 
                 // Titolo
                 Padding(
@@ -222,7 +320,9 @@ class _RecipeFormState extends State<RecipeFormPage> {
                       children: [
                         Padding(
                           padding: CustomEdgeInsets.only(left: 16, right: 12),
-                          child: TextWidget('Ricetta pubblicata:', fontWeight: AppFontWeight.semiBold, textColor: AppColors.caramelBrown),
+                          child: TextWidget('Ricetta pubblicata:',
+                              fontWeight: AppFontWeight.semiBold,
+                              textColor: AppColors.caramelBrown),
 
                         ),
                         Switch(
@@ -274,15 +374,21 @@ class _RecipeFormState extends State<RecipeFormPage> {
 
   // Button per crare una nuova ricetta
   Widget createButton(BuildContext context) {
+
+    void navigateBack() {
+      Navigation.back(context);
+    }
+
     return Padding(
         padding: const EdgeInsets.all(32),
         child: CustomButtons.submit(
             'Crea Ricetta',
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
-                setState(() {
-                  _isProcessing = true;
-                });
+                startLoadingAnimation();
+
+                // Creo la ricetta
+                bool boolImmagine = _lastOperation == OperationType.SELECTED;
 
                 String documentId = await RecipeNetwork.addRecipe(
                     Recipe(
@@ -294,12 +400,16 @@ class _RecipeFormState extends State<RecipeFormPage> {
                       tempoPreparazione: _tempoPreparazioneTextController.text.toInt(),
                       boolPubblicata: _pubblicataSwitchValue,
                       boolPostPrivato: _postPrivatoSwitchValue,
+                      boolImmagine: boolImmagine,
                     ).toDocumentMap());
 
-                // Aggiorno l'immagine
+                // Inserisco l'immagine
+                if (boolImmagine) {
+                  await StorageNetwork.uploadRecipeImage(file: _imageFile!, filename: documentId);
+                }
 
                 // Navigo
-                Navigation.back(context);
+                navigateBack();
               }
             }
 
@@ -310,15 +420,18 @@ class _RecipeFormState extends State<RecipeFormPage> {
 
   // Button per salvare le modifiche alla ricetta
   Widget editButton(BuildContext context) {
+
+    void navigateBack() {
+      Navigation.back(context);
+    }
+
     return Padding(
         padding: CustomEdgeInsets.all(32),
         child: CustomButtons.submit(
             'Salva Modifiche',
             onPressed: () async {
               if (_formKey.currentState!.validate()) {
-                setState(() {
-                  _isProcessing = true;
-                });
+                startLoadingAnimation();
 
                 // Aggiorno la ricetta
                 Recipe recipe;
@@ -334,6 +447,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
                     tempoPreparazione: _tempoPreparazioneTextController.text.toInt(),
                     boolPubblicata: true,
                     boolPostPrivato: _postPrivatoSwitchValue,
+                    boolImmagine: _lastOperation == OperationType.SELECTED || (_lastOperation == OperationType.NONE && _boolImmagine),
                     timestampCreazione: _oldData['timestampCreazione'],
                     timestampPubblicazione: _oldData['boolPubblicata'] ? _oldData['timestampPubblicazione'] : Timestamp.now(),
                     views: _oldData['views'],
@@ -352,6 +466,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
                     numPersone: _numPersoneTextController.text.toInt(),
                     preparazione: _preparazioneTextController.text,
                     tempoPreparazione: _tempoPreparazioneTextController.text.toInt(),
+                    boolImmagine: _lastOperation == OperationType.SELECTED || (_lastOperation == OperationType.NONE && _boolImmagine),
                     timestampCreazione: _oldData['timestampCreazione'],
                   );
                 }
@@ -359,9 +474,14 @@ class _RecipeFormState extends State<RecipeFormPage> {
                 RecipeNetwork.updateRecipe(recipe);
 
                 // Aggiorno l'immagine
+                if (_lastOperation == OperationType.SELECTED) {
+                  await StorageNetwork.uploadRecipeImage(file: _imageFile!, filename: _oldData.id);
+                } else if (_lastOperation == OperationType.REMOVED && _boolImmagine) {
+                  await StorageNetwork.deleteRecipeImage(filename: _oldData.id);
+                }
 
                 // Navigo
-                Navigation.back(context);
+                navigateBack();
               }
             }
 
@@ -376,21 +496,46 @@ class _RecipeFormState extends State<RecipeFormPage> {
         child: CustomButtons.delete(
             'Elimina Ricetta',
             onPressed: () async {
-              if (_formKey.currentState!.validate()) {
-                setState(() {
-                  _isProcessing = true;
-                });
+              showDialog(context: context, builder: (BuildContext context) {
+                void dismissDialog() {
+                  Navigation.back(context);
+                }
 
-                // Elimino la ricetta
-                RecipeNetwork.deleteRecipe(_oldData.id);
+                void navigateToCookbook() {
+                  Navigation.backUntil(context, CookbookPage.route);
+                }
 
-                // Elimino l'immagine
+                return AlertDialog(
+                    title: Text('Conferma Eliminazione'),
+                    content: Text('Sei sicuro di voler eliminare la ricetta?'),
+                    actionsPadding: EdgeInsets.symmetric(horizontal: 16),
+                    actionsAlignment: MainAxisAlignment.spaceAround,
+                    actions: [
+                      TextButton(
+                          child: Text('Sì',
+                              style: TextStyle(color: AppColors.heartRed, fontSize: 18)),
+                          onPressed: () async {
+                            dismissDialog();
+                            startLoadingAnimation();
 
-                // Navigo
-                Navigation.backUntil(context, '/cookbook');
-              }
+                            // Elimino la ricetta
+                            RecipeNetwork.deleteRecipe(_oldData.id);
+
+                            // Elimino l'immagine
+                            StorageNetwork.deleteRecipeImage(filename: _oldData.id);
+
+                            // Navigo
+                            navigateToCookbook();
+                          }),
+                      TextButton(
+                          child: Text('No',
+                              style: TextStyle(color: AppColors.tawnyBrown, fontSize: 18)),
+                          onPressed: () async {
+                            dismissDialog();
+                          }),
+                    ]);
+              });
             }
-
         )
     );
   }

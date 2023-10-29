@@ -68,7 +68,7 @@ class _RecipeDetailsState extends State<RecipeDetailsPage> {
                     SizedBox(
                         width: double.infinity,
                         height: 200,
-                        child: ImageLoader.fromRecipeStorage(data.id.toString())
+                        child: ImageLoader.firebaseRecipeStorageImage(data.id.toString())
                     ),
 
                     // Sezione titolo e informazioni principali

@@ -33,7 +33,7 @@ class RecipeItem extends Item {
                         topRight: Radius.circular(20),
                         topLeft: Radius.circular(20),
                       ),
-                      child: ImageLoader.fromRecipeStorage(itemData.id.toString())
+                      child: ImageLoader.firebaseRecipeStorageImage(itemData.id.toString())
                   ),
                 ),
                 Padding(
