@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+
 class Validator {
 
   static String? validateNome({required String? nome}) {
@@ -64,13 +66,36 @@ class Validator {
     return null;
   }
 
+  static Future<String?> validateCurrentPassword({required String? password}) async {
+    if (password == null){
+      return null;
+    }
+
+    AuthCredential credential = EmailAuthProvider.credential(
+        email: FirebaseAuth.instance.currentUser!.email!, password: password);
+
+    if (password.isEmpty) {
+      return 'Il campo "Password" non può essere vuoto!';
+    } else {
+      try{
+        await FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(credential);
+      }on FirebaseAuthException catch (e){
+          return 'La password inserita non è corretta!';
+      }
+    }
+
+    return null;
+
+  }
+
   static String? validateEqualPassword({required String? password, required String? chkPassword}){
-    if (password == null || chkPassword == null) {
+    if (password == null || chkPassword == null ||
+        password.isEmpty && chkPassword.isEmpty) {
       return null;
     }
 
     if (password.isEmpty) {
-      return 'Il campo "Password" non può essere vuoto!';
+      return 'Il campo "Nuova password" non può essere vuoto!';
     } else if (password.length < 8) {
       return 'Inserire una password con una lunghezza di almeno 8 caratteri!';
     } else if (chkPassword.isEmpty){

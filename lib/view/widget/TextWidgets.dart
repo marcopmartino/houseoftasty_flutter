@@ -56,6 +56,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final String hint;
   final int? minLines;
   final int? maxLines;
+  final bool obscureText;
   late final TextInputType? keyboardType;
   late final List<TextInputFormatter>? inputFormatters;
 
@@ -65,6 +66,7 @@ class TextFormFieldWidget extends StatelessWidget {
     this.validator,
     this.label = '',
     this.hint = '',
+    this.obscureText = false,
     this.keyboardType,
     this.inputFormatters,
     this.minLines,
@@ -75,6 +77,7 @@ class TextFormFieldWidget extends StatelessWidget {
     required this.controller,
     this.validator,
     this.label = '',
+    this.obscureText = false,
     this.hint = '',
     this.minLines,
     this.maxLines
@@ -89,6 +92,7 @@ class TextFormFieldWidget extends StatelessWidget {
     this.validator,
     this.label = '',
     this.hint = '',
+    this.obscureText = false,
     this.inputFormatters,
     this.minLines = 1,
     this.maxLines = 5
@@ -96,6 +100,18 @@ class TextFormFieldWidget extends StatelessWidget {
   {
     keyboardType = TextInputType.multiline;
   }
+
+  TextFormFieldWidget.psw({
+    required this.controller,
+    this.validator,
+    this.label = '',
+    this.hint = '',
+    required this.obscureText,
+    this.keyboardType,
+    this.inputFormatters,
+    this.minLines = 1,
+    this.maxLines = 1
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,9 +122,12 @@ class TextFormFieldWidget extends StatelessWidget {
       validator: validator,
       minLines: minLines, // Normal textInputField will be displayed,
       maxLines: maxLines,
+      obscureText: obscureText,
       style: TextStyle(color: Colors.black),
       decoration: CustomDecoration.productInputDecoration(label, hint),
     );
   }
+
 }
+
 

@@ -73,6 +73,7 @@ flutter:
      - assets/images/logo_medium.png
      - assets/images/user_image_default.png
      - assets/images/kitchen_background_01.jpg
+     - assets/images/icon_profile.png
      - assets/images/carica_immagine.png
 
   # An image asset can refer to one or more resolution-specific "variants", see

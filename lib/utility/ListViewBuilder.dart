@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import '../view/item/ProductItem.dart';
 import '../view/widget/CustomEdgeInsets.dart';
 import '../view/item/RecipeItem.dart';
 import '../view/item/Item.dart';
@@ -16,6 +17,8 @@ class ListViewBuilder extends StatelessWidget {
     switch(itemType.name) {
       case 'RECIPE':
           return RecipeItem(itemData: itemData);
+      case 'PRODUCT':
+          return ProductItem(itemData: itemData);
       default:
           return Item(itemData: itemData);
     }
@@ -26,6 +29,8 @@ class ListViewBuilder extends StatelessWidget {
     return SizedBox(
         width: double.infinity,
         child: ListView.builder(
+          scrollDirection: Axis.vertical,
+          shrinkWrap: true,
           itemCount: data.size,
           itemBuilder: (context, index) {
             final itemData = data.docs[index];

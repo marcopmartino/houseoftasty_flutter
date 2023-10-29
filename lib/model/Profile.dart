@@ -22,7 +22,7 @@ class Profile {
       'nome': nome,
       'cognome': cognome,
       'email': email,
-      'password': username,
+      'username': username,
       'boolImmagine': boolImmagine,
     };
   }

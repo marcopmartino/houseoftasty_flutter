@@ -14,6 +14,11 @@ class RecipeNetwork {
         isEqualTo: FirebaseAuth.instance.currentUserId).snapshots();
   }
 
+  static Stream<QuerySnapshot<Object?>> getCurrentUserRecipesPublish() {
+    return _recipesReference.where('idCreatore',
+        isEqualTo: FirebaseAuth.instance.currentUserId).where('boolPubblicata', isEqualTo: true).snapshots();
+  }
+
   static Stream<DocumentSnapshot<Object?>> getRecipeDetails(String recipeId) {
     return _recipesReference.doc(recipeId).snapshots();
   }

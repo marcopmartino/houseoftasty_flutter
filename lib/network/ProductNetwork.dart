@@ -1,4 +1,3 @@
-import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,87 +5,30 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../Model/Product.dart';
 
 class ProductNetwork{
-  static CollectionReference products = FirebaseFirestore.instance.collection('users')
-      .doc(FirebaseAuth.instance.currentUser!.uid).collection('products');
 
-  static Stream<QuerySnapshot<Object?>> productsSnapshot = products.snapshots();
+  static CollectionReference _products =
+    FirebaseFirestore.instance.collection('users')
+      .doc(FirebaseAuth.instance.currentUser?.uid).collection('products');
 
-  static Future<Object?> addProduct({
-    required String nome,
-    required String quantita,
-    required String misura,
-    required String scadenza}) async {
-
-    final Map<String,dynamic> product = {
-      'nome': nome,
-      'quantita': quantita,
-      'misura': misura,
-      'scadenza': scadenza
-    };
-
-    products.add(product).catchError((e){
-      return e;
-    });
-
-    return null;
+  static Stream<QuerySnapshot<Object?>> getProductByUserId() {
+    return _products.snapshots();
   }
 
-  static Future<Object?> editProduct({
-    required String id,
-    required String nome,
-    required String quantita,
-    required String misura,
-    required String scadenza}) async {
-
-    final Map<String,dynamic> product = {
-        'nome': nome,
-        'quantita': quantita,
-        'misura': misura,
-        'scadenza': scadenza
-    };
-
-    products.doc(id).update(product).catchError((e){
-      return e;
-    });
-
-    return null;
+  static Stream<DocumentSnapshot<Object?>> getProductById(String productId) {
+    return _products.doc(productId).snapshots();
   }
 
-  static Future<Object?> deleteProduct({
-    required String id}) async {
-
-    products.doc(id).delete().catchError((e){
-      return e;
-    });
-
-    return null;
+  static Future<String> addProduct(Map<String, dynamic> product) async {
+    DocumentReference doc = await _products.add(product);
+    return doc.id;
   }
 
-  static Future<List<Product>> getProductByUserId() async {
-    List<Product> product = [];
-
-    await products.get().then((QuerySnapshot query){
-      for (var doc in query.docs) {
-        product.add(doc as Product);
-      }
-    });
-
-    return product;
+  static void updateProduct(Product product) async {
+    await _products.doc(product.id).update(product.toMap());
   }
 
-  static Future<Product> getProductById(String productId) async{
-    late Product product;
-
-    await products.doc(productId).get().then((DocumentSnapshot doc){
-      product = Product(
-          id: productId,
-          nome: doc['nome'],
-          quantita: doc['quantita'],
-          misura: doc['misura'],
-          scadenza: doc['scadenza']
-      );
-    });
-
-    return product;
+  static void deleteProduct(String productId) async {
+    await _products.doc(productId).delete();
   }
-}
+
+ }

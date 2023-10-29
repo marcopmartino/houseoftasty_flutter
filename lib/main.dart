@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:houseoftasty/utility/AppColors.dart';
 import 'package:houseoftasty/utility/Extensions.dart';
 import 'package:houseoftasty/view/page/CookbookPage.dart';
+import 'package:houseoftasty/view/page/ProductsPage.dart';
+import 'package:houseoftasty/view/page/ProfilePage.dart';
 
 import 'firebase_options.dart';
 
@@ -17,11 +20,13 @@ Future<void> main() async {
   runApp(MaterialApp(
     title: 'House of Tasty',
     theme: ThemeData(
-      primarySwatch: Colors.deepOrange,
+      primarySwatch: AppColors.getMaterialColor(AppColors.caramelBrown),
     ),
     initialRoute: '/',
     routes: {
       '/': (context) => HomePage(isLogged: FirebaseAuth.instance.isCurrentUserLoggedIn()),
+      ProfilePage.route: (context) => ProfilePage(),
+      ProductsPage.route: (context) => ProductsPage(),
       CookbookPage.route: (context) => CookbookPage(),
     },
   ));

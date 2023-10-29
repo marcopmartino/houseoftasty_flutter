@@ -24,18 +24,25 @@ class Product {
     };
   }
 
-  Product.fromMap(Map<String, dynamic> profileMap) :
-        id = profileMap['id'],
-        nome = profileMap['nome'],
-        quantita = profileMap['quantita'],
-        misura = profileMap['misura'],
-        scadenza = profileMap['scadenza'];
+  Product.fromMap(Map<String, dynamic> productMap) :
+        id = productMap['id'],
+        nome = productMap['nome'],
+        quantita = productMap['quantita'],
+        misura = productMap['misura'],
+        scadenza = productMap['scadenza'];
 
-  Product.fromSnapshot(DocumentSnapshot<Map<String, dynamic>> doc):
+  Product.fromDocumentSnapshot(DocumentSnapshot<Map<String, dynamic>> doc):
         id = doc.id,
         nome = doc.data()!['nome'],
         quantita = doc.data()!['quantita'],
         misura = doc.data()!['misura'],
         scadenza = doc.data()!['scadenza'];
+
+  Product.formQueryDocumentSnapshot(QueryDocumentSnapshot<Object?> doc):
+    id = doc.id,
+    nome = doc['nome'],
+    quantita = doc['quantita'],
+    misura = doc['misura'],
+    scadenza = doc['scadenza'];
 
 }

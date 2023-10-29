@@ -113,10 +113,20 @@ class CustomDecoration {
           fontWeight: FontWeight.bold);
     }
 
+    int diff;
+
     DateTime now = DateTime.now();
     DateTime date = DateFormat('dd/MM/yyyy').parse(data);
-    int diff = now.difference(date).inDays;
-    if(diff>2){
+    now.isAfter(date) ? diff = 0 : diff = now.difference(date).inDays;
+
+    int daysBetween(DateTime now, DateTime date) {
+      now = DateTime(now.year, now.month, now.day);
+      date = DateTime(date.year, date.month, date.day);
+      return (date.difference(now).inHours / 24).round();
+    }
+    diff = daysBetween(now, date);
+    print(diff);
+    if(diff<0){
       return TextStyle(
           color: Colors.red,
           fontWeight: FontWeight.bold);
@@ -124,7 +134,7 @@ class CustomDecoration {
       return TextStyle(
           color: Colors.orange,
           fontWeight: FontWeight.bold);
-    }else if(diff<=0){
+    }else if(diff>2){
       return TextStyle(
           color: Colors.black,
           fontWeight: FontWeight.bold);
@@ -157,11 +167,27 @@ class CustomDecoration {
     );
   }
 
+  static ButtonStyle submitSmallButtonDecoration() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: AppColors.tawnyBrown,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+      fixedSize: Size(180,40),
+    );
+  }
+
   static ButtonStyle deleteButtonDecoration() {
     return ElevatedButton.styleFrom(
       backgroundColor: AppColors.darkRed,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
       fixedSize: Size(280,60),
+    );
+  }
+
+  static ButtonStyle deleteSmallButtonDecoration() {
+    return ElevatedButton.styleFrom(
+      backgroundColor: AppColors.darkRed,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+      fixedSize: Size(180,40),
     );
   }
 }

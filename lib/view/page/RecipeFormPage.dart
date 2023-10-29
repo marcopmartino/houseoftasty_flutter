@@ -372,7 +372,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
     );
   }
 
-  // Button per crare una nuova ricetta
+  // Button per creare una nuova ricetta
   Widget createButton(BuildContext context) {
 
     void navigateBack() {
@@ -416,7 +416,6 @@ class _RecipeFormState extends State<RecipeFormPage> {
         )
     );
   }
-
 
   // Button per salvare le modifiche alla ricetta
   Widget editButton(BuildContext context) {

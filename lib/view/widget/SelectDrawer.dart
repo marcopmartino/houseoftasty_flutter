@@ -5,6 +5,7 @@ import 'package:houseoftasty/view/page/ProductsPage.dart';
 import 'package:houseoftasty/view/page/HomePage.dart';
 import 'package:houseoftasty/view/page/LoginPage.dart';
 import 'package:houseoftasty/view/page/CookbookPage.dart';
+import 'package:houseoftasty/view/page/ProfilePage.dart';
 
 import '../../utility/AppColors.dart';
 import '../../utility/Navigation.dart';
@@ -131,6 +132,15 @@ class SelectDrawer extends StatelessWidget {
               },
             ),
             ListTile(
+              leading: Icon(Icons.person, color: AppColors.tawnyBrown),
+              title: const Text('Profilo'),
+              onTap: () {
+                // Then close the drawer
+                Navigator.pop(context);
+                Navigation.navigate(context, ProfilePage(), route: ProfilePage.route);
+              },
+            ),
+            ListTile(
                 leading: Icon(Icons.explore, color: AppColors.tawnyBrown),
                 title: Text('Esplora'),
                 onTap: () {
@@ -155,8 +165,8 @@ class SelectDrawer extends StatelessWidget {
                 leading: Icon(Icons.apple, color: AppColors.tawnyBrown),
                 title: Text('Prodotti'),
                 onTap: () {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => ProductsPage()));
+                  Navigator.pop(context);
+                  Navigation.navigate(context, ProductsPage(), route: ProductsPage.route);
                 }),
             ListTile(
                 leading: Icon(Icons.logout, color: AppColors.tawnyBrown),

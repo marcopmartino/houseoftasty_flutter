@@ -6,7 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../model/Profile.dart';
 
 class ProfileNetwork{
-  static CollectionReference users = FirebaseFirestore.instance.collection('users');
+  static DocumentReference _user = FirebaseFirestore.instance.collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
 
   static Future<Object?> addUser({
       required String nome,
@@ -22,10 +23,18 @@ class ProfileNetwork{
       boolImmagine: false
     );
 
-    users.doc(FirebaseAuth.instance.currentUser!.uid).set(user.toMap()).catchError((e){
+    _user.set(user.toMap()).catchError((e){
       return e;
     });
 
     return null;
+  }
+
+  static Stream<DocumentSnapshot<Object?>> getProfileInfo() {
+    return _user.snapshots();
+  }
+
+  static void updateProfile(Profile user){
+    _user.update(user.toMap());
   }
 }

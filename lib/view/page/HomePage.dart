@@ -17,8 +17,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text('House of Tasty')),
-        body: Center(
-        ),
+        body: Center(),
         drawer: SelectDrawer(isLogged: widget.isLogged),
     );
   }
