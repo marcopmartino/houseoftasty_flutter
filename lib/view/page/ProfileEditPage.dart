@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,20 +7,17 @@ import 'package:houseoftasty/network/ProfileNetwork.dart';
 import 'package:houseoftasty/utility/StreamBuilders.dart';
 import 'package:houseoftasty/view/widget/CustomButtons.dart';
 import 'package:houseoftasty/view/widget/TextWidgets.dart';
-import 'package:intl/intl.dart';
+import 'package:image_picker/image_picker.dart';
 
-import '../../Model/Product.dart';
 import '../../model/Profile.dart';
+import '../../network/StorageNetwork.dart';
 import '../../utility/AppColors.dart';
 import '../../utility/ImageLoader.dart';
 import '../../utility/Navigation.dart';
+import '../../utility/OperationType.dart';
 import '../../utility/Validator.dart';
 
-import '../../network/ProductNetwork.dart';
-
-import '../widget/CustomDecoration.dart';
 import '../widget/CustomScaffold.dart';
-import '../widget/DropdownWidget.dart';
 
 class ProfileEditPage extends StatefulWidget {
 
@@ -49,6 +47,12 @@ class _ProfileEditPage extends State<ProfileEditPage> {
   bool _initializationCompleted = false;
   bool _isProcessing = false;
 
+  Image _defaultImage = ImageLoader.asset('user_image_default.png');
+  File? _imageFile;
+  Image? get _image => _imageFile != null ? ImageLoader.path(_imageFile!.path) : _defaultImage;
+
+  OperationType _lastOperation = OperationType.NONE;
+
   final spinnerItem = [
     '-',
     'g',
@@ -59,31 +63,34 @@ class _ProfileEditPage extends State<ProfileEditPage> {
 
   late DocumentSnapshot<Object?> _oldData;
 
-  Future<void> _showAlertDialog(String error) async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false, // user must tap button!
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Errore'),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text(error),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Ok'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  Future _showAlertDialog(FirebaseAuthException error) async {
+
+    print(error.code);
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+
+          void dismissDialog() {
+            Navigation.back(context);
+          }
+
+          return AlertDialog(
+              title: Text('Errore modifica profilo'),
+              content: error.code == 'wrong-password' ?
+                Text('Password inserita errata.') :
+                error.code == 'too-many-requests' ?
+                  Text('Troppe richieste, riprovare più tardi') : Text('Errore generico'),
+              actionsPadding: EdgeInsets.symmetric(horizontal: 16),
+              actionsAlignment: MainAxisAlignment.spaceBetween,
+              actions: [
+                TextButton(
+                    child: Text('Ok'),
+                    onPressed:  () {
+                      dismissDialog();
+                    }),
+              ]);
+        });
   }
 
   @override
@@ -94,7 +101,7 @@ class _ProfileEditPage extends State<ProfileEditPage> {
           title: ProfileEditPage.title,
           body: Center(
               child: CircularProgressIndicator(
-                color: AppColors.sandBrown,
+                color: AppColors.caramelBrown,
               )
           )
       );
@@ -116,7 +123,7 @@ class _ProfileEditPage extends State<ProfileEditPage> {
                           height: 150,
                           child: ClipRRect(
                               borderRadius: BorderRadius.circular(50.0),
-                              child: _boolImmagine ? ImageLoader.currentUserImage():Image.asset('assets/images/icon_profile.png')
+                              child: getImage()
                           ),
                         ),
                         Column(
@@ -271,7 +278,7 @@ class _ProfileEditPage extends State<ProfileEditPage> {
     );
   }
 
-  // Button per salvare le modifiche al prodotto
+  // Button per salvare le modifiche al profilo
   Widget editButton(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(left: 25, right: 25, top: 25, bottom: 25),
@@ -288,7 +295,7 @@ class _ProfileEditPage extends State<ProfileEditPage> {
               nome: _nomeTextController.text,
               cognome: _cognomeTextController.text,
               email: _emailTextController.text,
-              boolImmagine: false,
+              boolImmagine: _lastOperation == OperationType.SELECTED || (_lastOperation == OperationType.NONE && _boolImmagine),
             );
 
             AuthCredential credential = EmailAuthProvider.credential(
@@ -297,56 +304,76 @@ class _ProfileEditPage extends State<ProfileEditPage> {
             try{
               await FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(credential);
               ProfileNetwork.updateProfile(user);
+              if (_lastOperation == OperationType.SELECTED) {
+                await StorageNetwork.uploadProfileImage(file: _imageFile!, filename: _oldData.id);
+              } else if (_lastOperation == OperationType.REMOVED && _boolImmagine) {
+                await StorageNetwork.deleteProfileImage(filename: _oldData.id);
+                Navigation.back(context);
+              }
             }on FirebaseAuthException catch (e){
-              _showAlertDialog(e as String);
+              _showAlertDialog(e);
             }
 
 
             setState(() {
               _isProcessing = false;
             });
-
-            Navigation.back(context);
           }
         }));
   }
 
-  // Button per eliminare il prodotto
+  // Button per eliminare la foto profilo
   Widget deleteButton(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(top:5, left:35, right: 15),
         child: CustomButtons.deleteSmall(
           'Elimina immagine',
           onPressed: () async {
-
-            if (_formKey.currentState!.validate()) {
-              setState(() {
-                _isProcessing = true;
-              });
-
-              //ProductNetwork.deleteProduct(_oldData.id);
-
+            if(_imageFile != null || (_lastOperation == OperationType.NONE && _boolImmagine)){
+              removeImage();
             }
           },
         )
     );
   }
 
-  // Button per creare un nuovo prodotto
+  // Button per aggiungere una foto profilo
   Widget createButton(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(top:5, left: 35, right: 15),
         child: CustomButtons.submitSmall(
           'Aggiungi immagine',
-          onPressed: () async {
-
-            if (_formKey.currentState!.validate()) {
-              setState(() {
-                _isProcessing = true;
-              });
-
-            }
-          },
+          onPressed: () {
+            ImageLoader.device(
+              context,
+              callback: (pickedImage) =>
+                  updateImage(pickedImage));
+          }
         ));
   }
+
+  void removeImage() {
+    setState(() {
+      _lastOperation = OperationType.REMOVED;
+      _imageFile = null;
+    });
+  }
+
+  void updateImage(PickedFile? pickedFile) {
+    if (pickedFile != null) {
+      setState(() {
+        _lastOperation = OperationType.SELECTED;
+        _imageFile = File(pickedFile.path);
+      });
+    }
+  }
+
+  StatefulWidget? getImage() {
+    if (_lastOperation == OperationType.NONE && _boolImmagine) {
+      return ImageLoader.firebaseProfileStorageImage(FirebaseAuth.instance.currentUser!.uid);
+    } else {
+      return _image;
+    }
+  }
+
 }
