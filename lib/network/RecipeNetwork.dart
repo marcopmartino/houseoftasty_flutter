@@ -20,7 +20,7 @@ class RecipeNetwork {
         isEqualTo: FirebaseAuth.instance.currentUserId).get();
   }
 
-  static Stream<QuerySnapshot<Object?>> getCurrentUserRecipesPublish() {
+  static Stream<QuerySnapshot<Object?>> getCurrentUserPublishedRecipes() {
     return _recipesReference.where('idCreatore',
         isEqualTo: FirebaseAuth.instance.currentUserId).where('boolPubblicata', isEqualTo: true).snapshots();
   }

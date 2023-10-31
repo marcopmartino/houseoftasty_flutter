@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/network/ProfileNetwork.dart';
-import 'package:houseoftasty/network/RecipeNetwork.dart';
-import 'package:houseoftasty/utility/Extensions.dart';
+import 'package:houseoftasty/utility/AppFontWeight.dart';
 import 'package:houseoftasty/utility/StreamBuilders.dart';
 import 'package:houseoftasty/view/page/ProfileEditPage.dart';
 import 'package:houseoftasty/view/widget/CustomEdgeInsets.dart';
@@ -13,7 +12,6 @@ import '../../utility/Navigation.dart';
 import '../../view/widget/CustomScaffold.dart';
 import '../widget/FloatingButtons.dart';
 import '../widget/TextWidgets.dart';
-import 'RecipeFormPage.dart';
 
 class ProfileDetailsPage extends StatefulWidget {
 
@@ -64,41 +62,41 @@ class _ProfileDetailsPage extends State<ProfileDetailsPage> {
                         // Sezione Username
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Username', fontSize: 18)
+                            child: SubtitleWidget('Username')
                         ),
                         Padding(
                             padding: CustomEdgeInsets.only(left:16, right:16), // Spaziatura esterna
-                            child: TextWidget(data['username'], fontSize: 14)
+                            child: TextWidget(data['username'], fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
 
                         // Sezione email
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Email', fontSize: 18)
+                            child: SubtitleWidget('Email')
                         ),
                         Padding(
                           padding: CustomEdgeInsets.only(left:16, right:16),  // Spaziatura esterna
-                          child: TextWidget(data['email'], fontSize: 14)
+                          child: TextWidget(data['email'], fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
 
                         // Sezione nome
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Nome', fontSize: 18)
+                            child: SubtitleWidget('Nome')
                         ),
                         Padding(
                           padding: CustomEdgeInsets.only(left:16, right:16),  // Spaziatura esterna
-                          child: TextWidget(data['nome'], fontSize: 14)
+                          child: TextWidget(data['nome'], fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
 
                         // Sezione cognome
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Cognome', fontSize: 18)
+                            child: SubtitleWidget('Cognome')
                         ),
                         Padding(
                             padding: CustomEdgeInsets.only(left:16, right:16, bottom:16),  // Spaziatura esterna
-                            child: TextWidget(data['cognome'], fontSize: 14)
+                            child: TextWidget(data['cognome'], fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
 
                         Container(
@@ -112,61 +110,61 @@ class _ProfileDetailsPage extends State<ProfileDetailsPage> {
                         // Sezione visualizzazioni profilo
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Visualizzazioni profilo', fontSize: 18)
+                            child: SubtitleWidget('Visualizzazioni profilo')
                         ),
                         Padding(
                             padding: CustomEdgeInsets.only(left:16, right:16), // Spaziatura esterna
-                            child: TextWidget('123', fontSize: 14)
+                            child: TextWidget('123', fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
 
                         // Sezione ricette pubblicate
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Ricette pubblicate', fontSize: 18)
+                            child: SubtitleWidget('Ricette pubblicate')
                         ),
                         Padding(
                             padding: CustomEdgeInsets.only(left:16, right:16),  // Spaziatura esterna
-                            child: TextWidget('123', fontSize: 14)
+                            child: TextWidget('123', fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
 
                         // Sezione totale visualizzazioni ricette
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Totale visualizzazioni ricette', fontSize: 18)
+                            child: SubtitleWidget('Totale visualizzazioni ricette')
                         ),
                         Padding(
                             padding: CustomEdgeInsets.only(left:16, right:16),  // Spaziatura esterna
-                            child: TextWidget('123', fontSize: 14)
+                            child: TextWidget('123', fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
 
                         // Sezione totale mi piace ricette
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Totale mi piace ricette', fontSize: 18)
+                            child: SubtitleWidget('Totale mi piace ricette')
                         ),
                         Padding(
                             padding: CustomEdgeInsets.only(left:16, right:16, bottom:16),  // Spaziatura esterna
-                            child: TextWidget('123', fontSize: 14)
+                            child: TextWidget('123', fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
 
                         // Sezione totale commenti ricette
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Totale commenti ricette', fontSize: 18)
+                            child: SubtitleWidget('Totale commenti ricette')
                         ),
                         Padding(
                             padding: CustomEdgeInsets.only(left:16, right:16),  // Spaziatura esterna
-                            child: TextWidget('123', fontSize: 14)
+                            child: TextWidget('123', fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
 
                         // Sezione totale download ricette
                         Padding(
                             padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
-                            child: TitleWidget('Totale download ricette', fontSize: 18)
+                            child: SubtitleWidget('Totale download ricette')
                         ),
                         Padding(
                             padding: CustomEdgeInsets.only(left:16, right:16, bottom:16),  // Spaziatura esterna
-                            child: TextWidget('123', fontSize: 14)
+                            child: TextWidget('123', fontSize: 15, fontWeight: AppFontWeight.medium)
                         ),
                       ]
                   )

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:houseoftasty/utility/AppFontWeight.dart';
 
 import '../../utility/AppColors.dart';
 import 'CustomDecoration.dart';
@@ -20,6 +21,29 @@ class TitleWidget extends StatelessWidget {
       style: TextStyle(
         fontSize: fontSize,
         fontFamily: 'BalooBhai',
+        color: textColor,
+      ),
+    );
+  }
+}
+
+class SubtitleWidget extends StatelessWidget {
+  final String text;
+  final double fontSize;
+  final Color textColor;
+  final FontWeight? fontWeight;
+
+  const SubtitleWidget(this.text, {this.fontSize = 16, this.textColor = AppColors.caramelBrown, this.fontWeight = AppFontWeight.semiBold});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      textAlign: TextAlign.start,
+      style: TextStyle(
+        fontSize: fontSize,
+        fontFamily: 'BalooBhai2',
+        fontWeight: fontWeight,
         color: textColor,
       ),
     );
