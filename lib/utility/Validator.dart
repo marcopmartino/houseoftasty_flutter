@@ -79,7 +79,7 @@ class Validator {
     } else {
       try{
         await FirebaseAuth.instance.currentUser!.reauthenticateWithCredential(credential);
-      }on FirebaseAuthException catch (e){
+      } on FirebaseAuthException {
           return 'La password inserita non è corretta!';
       }
     }
@@ -114,6 +114,20 @@ class Validator {
 
     if(value.isEmpty){
       return 'Questo campo non può essere vuoto';
+    }
+
+    return null;
+  }
+
+  static String? validateRecipeCollectionName({required String? value}){
+    if (value == null) {
+      return null;
+    }
+
+    if (value.isEmpty){
+      return 'Questo campo non può essere vuoto';
+    } else if (value.length > 20) {
+      return 'Il nome non può essere più lungo di 20 caratteri';
     }
 
     return null;

@@ -13,7 +13,7 @@ class CustomScaffold extends StatelessWidget {
   final bool resize;
 
   const CustomScaffold({super.key, required this.title, this.resize = false, this.withDrawer = false, this.floatingActionButton, required this.body});
-  const CustomScaffold.productForm({super.key, required this.title, this.resize = true, this.withDrawer = false, this.floatingActionButton, required this.body});
+  const CustomScaffold.form({super.key, required this.title, this.resize = true, this.withDrawer = false, this.floatingActionButton, required this.body});
   const CustomScaffold.withDrawer({super.key, required this.title, this.resize = false, this.withDrawer = true, this.floatingActionButton, required this.body});
 
   @override

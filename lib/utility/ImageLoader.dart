@@ -25,12 +25,24 @@ class ImageLoader {
     return asset('user_image_default.png');
   }
 
+  static Image defaultRecipeCollection() {
+    return asset('icon_folder_60x60.png');
+  }
+
+  static Future<Image> defaultRecipeCollectionAsync() async {
+    return asset('icon_folder_60x60.png');
+  }
+
   static Image file(File file) {
     return Image.file(fit: BoxFit.cover, file);
   }
 
   static Image path(String path) {
     return Image.file(fit: BoxFit.cover, File(path));
+  }
+
+  static Future<Image> network(String downloadURL) async {
+    return Image.network(fit: BoxFit.cover, downloadURL);
   }
 
   // Funzioni per ottenere immagini dallo Storage
@@ -61,6 +73,46 @@ class ImageLoader {
 
   static FutureBuilder<Image> currentUserImage() {
     return firebaseProfileStorageImage(FirebaseAuth.instance.currentUserId!);
+  }
+
+  static FutureBuilder<Image>? recipeCollectionImage(List<dynamic> recipeIds) {
+
+    String? downloadURL;
+    int lastIndex = recipeIds.length - 1;
+
+    /* Funzione ricorsiva
+    Per ogni id di ricetta presente in "recipeIds", prova a ottenere l'URL
+    dell'immagine corrispondente. Si esce dalla funzione non appena viene
+    trovata un'immagine, che viene caricata. Se nessuna delle ricette possiede
+    un'immagine, viene caricata l'immagine di default (icona cartella).
+     */
+    Future<Image> getRecipeCollectionImage({index = 0}) async {
+      String recipeId = recipeIds[index];
+      try {
+         downloadURL = await StorageNetwork.getDownloadURL('immagini_ricette/$recipeId');
+         return ImageLoader.network(downloadURL!);
+      } catch(e) {
+        if (index < lastIndex) {
+          getRecipeCollectionImage(index: index + 1);
+        } else {
+          return ImageLoader.defaultRecipeCollectionAsync();
+        }
+      }
+
+      return ImageLoader.defaultRecipeCollectionAsync();
+    }
+
+    return FutureBuilder<Image>(
+        future: getRecipeCollectionImage(),
+        builder: (BuildContext context, AsyncSnapshot<Image> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator(color: AppColors.sandBrown));
+          } else {
+            return snapshot.data ?? ImageLoader.defaultRecipeCollection();
+          }
+        }
+    );
+
   }
 
   // Funzioni per ottenere immagini dal dispositivo

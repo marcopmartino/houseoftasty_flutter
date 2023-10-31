@@ -27,7 +27,7 @@ class CustomDecoration {
         hintText: nome);
   }
 
-  static InputDecoration productInputDecoration(String nome, String hint){
+  static InputDecoration textFieldInputDecoration(String nome, String hint){
     return InputDecoration(
         floatingLabelBehavior: FloatingLabelBehavior.always,
         floatingLabelAlignment: FloatingLabelAlignment.start,

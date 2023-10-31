@@ -124,7 +124,7 @@ class TextFormFieldWidget extends StatelessWidget {
       maxLines: maxLines,
       obscureText: obscureText,
       style: TextStyle(color: Colors.black),
-      decoration: CustomDecoration.productInputDecoration(label, hint),
+      decoration: CustomDecoration.textFieldInputDecoration(label, hint),
     );
   }
 
