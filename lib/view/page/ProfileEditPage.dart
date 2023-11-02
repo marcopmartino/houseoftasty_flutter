@@ -17,6 +17,7 @@ import '../../utility/Navigation.dart';
 import '../../utility/OperationType.dart';
 import '../../utility/Validator.dart';
 
+import '../widget/CustomEdgeInsets.dart';
 import '../widget/CustomScaffold.dart';
 
 class ProfileEditPage extends StatefulWidget {
@@ -116,9 +117,10 @@ class _ProfileEditPage extends State<ProfileEditPage> {
                 Flexible(
                     fit: FlexFit.loose,
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(top: 30, bottom: 30),
+                          margin: CustomEdgeInsets.fromLTRB(10, 30, 0, 30),
                           width: 150,
                           height: 150,
                           child: ClipRRect(
@@ -128,8 +130,8 @@ class _ProfileEditPage extends State<ProfileEditPage> {
                         ),
                         Column(
                             children: [
-                              createButton(context),
-                              deleteButton(context),
+                              imageSelectionButton(context),
+                              imageRemovalButton(context),
                             ]
                         )
                       ],
@@ -168,9 +170,10 @@ class _ProfileEditPage extends State<ProfileEditPage> {
                       Flexible(
                         fit: FlexFit.loose,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Container(
-                              margin: EdgeInsets.only(top: 30, bottom: 30),
+                              margin: CustomEdgeInsets.fromLTRB(10, 30, 0, 30),
                               width: 150,
                               height: 150,
                               child: ClipRRect(
@@ -180,8 +183,8 @@ class _ProfileEditPage extends State<ProfileEditPage> {
                             ),
                             Column(
                               children: [
-                                createButton(context),
-                                deleteButton(context),
+                                imageSelectionButton(context),
+                                imageRemovalButton(context),
                               ]
                             )
                           ],
@@ -280,6 +283,10 @@ class _ProfileEditPage extends State<ProfileEditPage> {
 
   // Button per salvare le modifiche al profilo
   Widget editButton(BuildContext context) {
+    void navigateBack() {
+      Navigation.back(context);
+    }
+
     return Padding(
         padding: EdgeInsets.only(left: 25, right: 25, top: 25, bottom: 25),
         child: CustomButtons.submit('Salva Modifiche', onPressed: () async {
@@ -308,7 +315,7 @@ class _ProfileEditPage extends State<ProfileEditPage> {
                 await StorageNetwork.uploadProfileImage(file: _imageFile!, filename: _oldData.id);
               } else if (_lastOperation == OperationType.REMOVED && _boolImmagine) {
                 await StorageNetwork.deleteProfileImage(filename: _oldData.id);
-                Navigation.back(context);
+                navigateBack();
               }
             }on FirebaseAuthException catch (e){
               _showAlertDialog(e);
@@ -323,7 +330,7 @@ class _ProfileEditPage extends State<ProfileEditPage> {
   }
 
   // Button per eliminare la foto profilo
-  Widget deleteButton(BuildContext context) {
+  Widget imageRemovalButton(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(top:5, left:35, right: 15),
         child: CustomButtons.deleteSmall(
@@ -338,11 +345,11 @@ class _ProfileEditPage extends State<ProfileEditPage> {
   }
 
   // Button per aggiungere una foto profilo
-  Widget createButton(BuildContext context) {
+  Widget imageSelectionButton(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(top:5, left: 35, right: 15),
         child: CustomButtons.submitSmall(
-          'Aggiungi immagine',
+          'Modifica immagine',
           onPressed: () {
             ImageLoader.device(
               context,

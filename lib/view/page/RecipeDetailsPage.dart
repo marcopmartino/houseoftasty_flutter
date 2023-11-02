@@ -16,9 +16,8 @@ import 'RecipeFormPage.dart';
 class RecipeDetailsPage extends StatefulWidget {
   const RecipeDetailsPage({super.key, required this.recipeId});
 
-  static const String route = 'recipeDetails';
-
   static const String title = 'Dettagli Ricetta';
+
   final String recipeId;
 
   @override

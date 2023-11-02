@@ -29,6 +29,17 @@ extension IntExtended on int {
   }
 }
 
+// Extension per List<dynamic>
+extension ListExtended on List<dynamic> {
+  List<String> toStringList() {
+    List<String> stringList = List.empty(growable: true);
+    for (dynamic element in this) {
+      stringList.add(element.toString());
+    }
+    return stringList;
+  }
+}
+
 // Extension per String
 extension StringExtended on String {
   int toInt() => int.parse(this);

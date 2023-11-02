@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/network/ProfileNetwork.dart';
 import 'package:houseoftasty/network/RecipeNetwork.dart';
+import 'package:houseoftasty/utility/AppFontWeight.dart';
 import 'package:houseoftasty/utility/StreamBuilders.dart';
 import 'package:houseoftasty/view/page/ProfileDetailsPage.dart';
 import 'package:houseoftasty/view/widget/CustomEdgeInsets.dart';
@@ -59,8 +60,11 @@ class _ProfilePageState extends State<ProfilePage> {
                         Container(
                           alignment: AlignmentDirectional.center,
                           child: Padding(
-                              padding: CustomEdgeInsets.only(top:10, right:20, left: 20, bottom: 20), // Spaziatura esterna
-                              child: TitleWidget(data['username'], fontSize: 25)
+                              padding: CustomEdgeInsets.exceptTop(20), // Spaziatura esterna
+                              child: TextWidget(data['username'],
+                                  fontSize: 25,
+                                  fontWeight: AppFontWeight.semiBold,
+                                  textColor: AppColors.caramelBrown)
                           ),
                         ), //Nome profilo
 
@@ -73,14 +77,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         ), //Divider 'Ricette pubblicate'
 
                         ListViewStreamBuilder(
-                            stream: RecipeNetwork.getCurrentUserRecipesPublish(),
-                            itemType: ItemType.RECIPE,
-                            scroll: false,
-                            scale: 1.5,
-                            onTap: (String recipeId) {
-                              Navigation.navigate(context, RecipeDetailsPage(recipeId: recipeId));
-                            }
-                        )// Lista ricette pubblicate
+                          stream: RecipeNetwork.getCurrentUserPublishedRecipes(),
+                          itemType: ItemType.RECIPE,
+                          scale: 1.5,
+                          onTap: (String recipeId) {
+                            Navigation.navigate(context, RecipeDetailsPage(recipeId: recipeId));
+                          }
+                        ) // Lista ricette pubblicate
                       ]
                   ),
               );

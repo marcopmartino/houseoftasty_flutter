@@ -109,7 +109,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
           )
       );
     } else if (widget.newRecipe) {
-      return CustomScaffold(
+      return CustomScaffold.form(
           title: title,
           body: SingleChildScrollView(
             child: Column(
@@ -121,7 +121,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
         )
       );
     } else if (_initializationCompleted) {
-      return CustomScaffold(
+      return CustomScaffold.form(
           title: title,
           body: SingleChildScrollView(
             child: Column(
@@ -134,7 +134,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
         )
       );
     } else {
-      return CustomScaffold(
+      return CustomScaffold.form(
         title: title,
         body: DocumentStreamBuilder(
             stream: RecipeNetwork.getRecipeDetails(widget.recipeId!),
@@ -470,7 +470,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
                   );
                 }
 
-                RecipeNetwork.updateRecipe(recipe);
+                await RecipeNetwork.updateRecipe(recipe);
 
                 // Aggiorno l'immagine
                 if (_lastOperation == OperationType.SELECTED) {
@@ -518,7 +518,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
                             startLoadingAnimation();
 
                             // Elimino la ricetta
-                            RecipeNetwork.deleteRecipe(_oldData.id);
+                            await RecipeNetwork.deleteRecipe(_oldData.id);
 
                             // Elimino l'immagine
                             StorageNetwork.deleteRecipeImage(filename: _oldData.id);

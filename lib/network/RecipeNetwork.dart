@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:houseoftasty/network/RecipeCollectionNetwork.dart';
 import 'package:houseoftasty/utility/Extensions.dart';
 
 import '../model/Recipe.dart';
@@ -16,9 +17,34 @@ class RecipeNetwork {
         isEqualTo: FirebaseAuth.instance.currentUserId).snapshots();
   }
 
-  static Stream<QuerySnapshot<Object?>> getCurrentUserRecipesPublish() {
+  static Future<QuerySnapshot<Object?>> getCurrentUserRecipesOnce() {
+    return _recipesReference.where('idCreatore',
+        isEqualTo: FirebaseAuth.instance.currentUserId).get();
+  }
+
+  static Stream<QuerySnapshot<Object?>> getCurrentUserPublishedRecipes() {
     return _recipesReference.where('idCreatore',
         isEqualTo: FirebaseAuth.instance.currentUserId).where('boolPubblicata', isEqualTo: true).snapshots();
+  }
+
+  static Stream<QuerySnapshot<Object?>> getRecipesByIdList(List<String> recipeIds) {
+    return _recipesReference.where(FieldPath.documentId, whereIn: recipeIds).snapshots();
+  }
+
+  static Future<QuerySnapshot<Object?>> getRecipesByIdListOnce(List<String> recipeIds) {
+    return _recipesReference.where(FieldPath.documentId, whereIn: recipeIds).get();
+  }
+
+  static Future<QuerySnapshot<Object?>> getRecipesNotInIdListOnce(List<String> recipeIds) {
+    if (recipeIds.isEmpty) {
+      return getCurrentUserRecipesOnce();
+    } else {
+      return _recipesReference
+          .where('idCreatore', isEqualTo: FirebaseAuth.instance.currentUserId)
+          .where(FieldPath.documentId, whereNotIn: recipeIds)
+          .get();
+    }
+
   }
 
   static Stream<DocumentSnapshot<Object?>> getRecipeDetails(String recipeId) {
@@ -40,12 +66,13 @@ class RecipeNetwork {
     return docRef.id;
   }
 
-  static void updateRecipe(Recipe recipe) async {
+  static Future updateRecipe(Recipe recipe) async {
     await _recipesReference.doc(recipe.id).update(recipe.toDocumentMap());
   }
 
-  static void deleteRecipe(String recipeId) async {
+  static Future deleteRecipe(String recipeId) async {
     await _recipesReference.doc(recipeId).delete();
+    await RecipeCollectionNetwork.removeFromRecipeCollections(recipeId);
   }
 
 }

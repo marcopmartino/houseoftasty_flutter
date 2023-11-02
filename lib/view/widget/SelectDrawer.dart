@@ -10,6 +10,7 @@ import 'package:houseoftasty/view/page/ProfilePage.dart';
 import '../../utility/AppColors.dart';
 import '../../utility/Navigation.dart';
 import '../page/ExplorePage.dart';
+import '../page/RecipeCollectionsPage.dart';
 
 class SelectDrawer extends StatelessWidget {
   const SelectDrawer({super.key, required this.isLogged});
@@ -161,6 +162,7 @@ class SelectDrawer extends StatelessWidget {
               title: const Text('Raccolte'),
               onTap: () {
                 Navigator.pop(context);
+                Navigation.navigate(context, RecipeCollectionsPage(), route: RecipeCollectionsPage.route);
               },
             ),
             ListTile(

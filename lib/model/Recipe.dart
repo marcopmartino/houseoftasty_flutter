@@ -43,8 +43,8 @@ class Recipe {
     this.nomeCreatore
   }) {
     this.timestampCreazione = timestampCreazione ?? Timestamp.now();
-    this.downloads = (downloads ?? List.empty()).cast<String>();
-    this.likes = (likes ?? List.empty()).cast<String>();
+    this.downloads = (downloads ?? List.empty(growable: true)).cast<String>();
+    this.likes = (likes ?? List.empty(growable: true)).cast<String>();
   }
 
   Map<String, dynamic> toMap() {
