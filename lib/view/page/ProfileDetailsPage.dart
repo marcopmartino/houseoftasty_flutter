@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/network/ProfileNetwork.dart';
-import 'package:houseoftasty/network/RecipeNetwork.dart';
-import 'package:houseoftasty/utility/Extensions.dart';
 import 'package:houseoftasty/utility/StreamBuilders.dart';
 import 'package:houseoftasty/view/page/ProfileEditPage.dart';
 import 'package:houseoftasty/view/widget/CustomEdgeInsets.dart';
@@ -13,7 +11,6 @@ import '../../utility/Navigation.dart';
 import '../../view/widget/CustomScaffold.dart';
 import '../widget/FloatingButtons.dart';
 import '../widget/TextWidgets.dart';
-import 'RecipeFormPage.dart';
 
 class ProfileDetailsPage extends StatefulWidget {
 

@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:houseoftasty/utility/AppColors.dart';
 import 'package:houseoftasty/utility/Extensions.dart';
 import 'package:houseoftasty/view/page/CookbookPage.dart';
+import 'package:houseoftasty/view/page/ExplorePage.dart';
 import 'package:houseoftasty/view/page/ProductsPage.dart';
 import 'package:houseoftasty/view/page/ProfilePage.dart';
 
@@ -28,6 +29,7 @@ Future<void> main() async {
       ProfilePage.route: (context) => ProfilePage(),
       ProductsPage.route: (context) => ProductsPage(),
       CookbookPage.route: (context) => CookbookPage(),
+      ExplorePage.route: (context) => ExplorePage(),
     },
   ));
 }

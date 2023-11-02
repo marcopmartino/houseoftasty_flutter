@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:houseoftasty/utility/Extensions.dart';
@@ -21,6 +23,16 @@ class RecipeNetwork {
 
   static Stream<DocumentSnapshot<Object?>> getRecipeDetails(String recipeId) {
     return _recipesReference.doc(recipeId).snapshots();
+  }
+
+  static Stream<QuerySnapshot<Object?>> getRecipePublish(){
+    return _recipesReference.where(
+      Filter.and(
+        Filter('boolPostPrivato', isEqualTo: false),
+        Filter('boolPubblicata', isEqualTo: true),
+        Filter('idCreatore', isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      )
+    ).snapshots();
   }
 
   static Future<String> addRecipe(Map<String, dynamic> recipe) async {

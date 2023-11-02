@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/network/ProfileNetwork.dart';
 import 'package:houseoftasty/network/RecipeNetwork.dart';
-import 'package:houseoftasty/utility/Extensions.dart';
 import 'package:houseoftasty/utility/StreamBuilders.dart';
 import 'package:houseoftasty/view/page/ProfileDetailsPage.dart';
 import 'package:houseoftasty/view/widget/CustomEdgeInsets.dart';
@@ -12,11 +11,8 @@ import '../../utility/ImageLoader.dart';
 import '../../utility/Navigation.dart';
 import '../../view/widget/CustomScaffold.dart';
 import '../item/Item.dart';
-import '../widget/FloatingButtons.dart';
 import '../widget/TextWidgets.dart';
-import 'ProfileEditPage.dart';
 import 'RecipeDetailsPage.dart';
-import 'RecipeFormPage.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -40,6 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
             builder: (BuildContext builder, DocumentSnapshot<Object?> data) {
 
               return SingleChildScrollView(
+                  physics: ScrollPhysics(),
                   child: Column(
                       mainAxisSize: MainAxisSize.min ,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,29 +59,30 @@ class _ProfilePageState extends State<ProfilePage> {
                         Container(
                           alignment: AlignmentDirectional.center,
                           child: Padding(
-                              padding: CustomEdgeInsets.all(20), // Spaziatura esterna
+                              padding: CustomEdgeInsets.only(top:10, right:20, left: 20, bottom: 20), // Spaziatura esterna
                               child: TitleWidget(data['username'], fontSize: 25)
                           ),
                         ), //Nome profilo
 
                         Container(
-                              width: double.infinity,
-                              height: 30,
-                              alignment: AlignmentDirectional.center,
-                              color: AppColors.caramelBrown,
-                              child: TitleWidget.formButton('Ricette pubblicate', fontSize: 15)
-                          ), //Divider 'Ricette pubblicate'
+                            width: double.infinity,
+                            height: 30,
+                            alignment: AlignmentDirectional.center,
+                            color: AppColors.caramelBrown,
+                            child: TitleWidget.formButton('Ricette pubblicate', fontSize: 15)
+                        ), //Divider 'Ricette pubblicate'
 
                         ListViewStreamBuilder(
-                          stream: RecipeNetwork.getCurrentUserRecipesPublish(),
-                          itemType: ItemType.RECIPE,
-                          scale: 1.5,
-                          onTap: (String recipeId) {
-                            Navigation.navigate(context, RecipeDetailsPage(recipeId: recipeId));
-                          }
-                        ) // Lista ricette pubblicate
+                            stream: RecipeNetwork.getCurrentUserRecipesPublish(),
+                            itemType: ItemType.RECIPE,
+                            scroll: false,
+                            scale: 1.5,
+                            onTap: (String recipeId) {
+                              Navigation.navigate(context, RecipeDetailsPage(recipeId: recipeId));
+                            }
+                        )// Lista ricette pubblicate
                       ]
-                  )
+                  ),
               );
             }),
     );

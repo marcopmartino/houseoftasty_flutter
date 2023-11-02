@@ -56,6 +56,44 @@ class CustomDecoration {
     );
   }
 
+  static InputDecoration searchInputDecoration(String nome, String hint){
+    return InputDecoration(
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+      floatingLabelAlignment: FloatingLabelAlignment.start,
+      hintStyle: TextStyle(color: Colors.black12),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: BorderSide(
+          color: AppColors.caramelBrown,
+        ),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(5),
+        borderSide: BorderSide(
+          color: AppColors.caramelBrown,
+        ),
+      ),
+      labelStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: AppFontWeight.semiBold,
+          color: AppColors.caramelBrown
+      ),
+      labelText: nome,
+      filled: true,
+      fillColor: Colors.white,
+      hintText: hint,
+      suffixIcon: Container(
+        margin: EdgeInsets.all(8),
+        child: IconButton(
+          icon: Icon(Icons.search),
+          onPressed: () {
+
+          },
+        ),
+      ),
+    );
+  }
+
   static InputDecoration dropDownInputDecoration(){
     return InputDecoration(
       contentPadding: EdgeInsets.all(17),

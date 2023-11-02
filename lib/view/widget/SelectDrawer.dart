@@ -9,6 +9,7 @@ import 'package:houseoftasty/view/page/ProfilePage.dart';
 
 import '../../utility/AppColors.dart';
 import '../../utility/Navigation.dart';
+import '../page/ExplorePage.dart';
 
 class SelectDrawer extends StatelessWidget {
   const SelectDrawer({super.key, required this.isLogged});
@@ -145,6 +146,7 @@ class SelectDrawer extends StatelessWidget {
                 title: Text('Esplora'),
                 onTap: () {
                   Navigator.pop(context);
+                  Navigation.navigate(context, ExplorePage(), route: ExplorePage.route);
                 }),
             ListTile(
               leading: Icon(Icons.book, color: AppColors.tawnyBrown),

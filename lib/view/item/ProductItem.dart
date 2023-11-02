@@ -22,7 +22,7 @@ class ProductItem extends Item {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ListTile(
             title: Text(
-              "${itemData['nome']}",
+              "${itemData!['nome']}",
               style: TextStyle(
                 color: AppColors.caramelBrown,
                 fontWeight: FontWeight.bold,
@@ -41,10 +41,10 @@ class ProductItem extends Item {
                 Text(
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold),
-                  "${itemData['quantita']}${itemData['misura'] == '-'? '': "${itemData['misura']}"}",
+                  "${itemData!['quantita']}${itemData!['misura'] == '-'? '': "${itemData!['misura']}"}",
                 ), //Quantita Txt
                 SizedBox(
-                  width: itemData['misura'] == '-'?  70 : itemData['misura'] != 'Kg'? 60 : 50,
+                  width: itemData!['misura'] == '-'?  70 : itemData!['misura'] != 'Kg'? 60 : 50,
                 ),
                 Text(
                   style: TextStyle(
@@ -54,8 +54,8 @@ class ProductItem extends Item {
                   'Scadenza: ',
                 ), //Scadenza Label
                 Text(
-                  style: CustomDecoration.checkData(itemData['scadenza']),
-                  "${itemData['scadenza']}",
+                  style: CustomDecoration.checkData(itemData!['scadenza']),
+                  "${itemData!['scadenza']}",
                 ), //Scadenza Txt
               ],
             ),

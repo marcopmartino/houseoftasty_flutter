@@ -6,12 +6,16 @@ import '../view/item/RecipeItem.dart';
 import '../view/item/Item.dart';
 
 class ListViewBuilder extends StatelessWidget {
-  final QuerySnapshot<Object?> data;
+  final QuerySnapshot<Object?>? data;
+  final List? dataMap;
   final Function(String) onTap;
   final ItemType itemType;
   final double scale;
+  final bool? scroll;
 
-  const ListViewBuilder({super.key, required this.data, required this.onTap, this.itemType = ItemType.NONE, this.scale = 1});
+  const ListViewBuilder({super.key, this.scroll, this.data, required this.onTap, this.itemType = ItemType.NONE, this.scale = 1, this.dataMap});
+
+  const ListViewBuilder.search({super.key, this.scroll, this.data, required this.onTap, this.itemType = ItemType.NONE, this.scale = 1, this.dataMap});
 
   Item _getListItem(QueryDocumentSnapshot<Object?> itemData) {
     switch(itemType.name) {
@@ -23,24 +27,28 @@ class ListViewBuilder extends StatelessWidget {
           return Item(itemData: itemData);
     }
   }
+  
+  Item _getListItemList(Map<String, dynamic> itemData){
+    return RecipeItem.list(itemDataList: itemData);
+  }
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
         width: double.infinity,
         child: ListView.builder(
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          itemCount: data.size,
+          shrinkWrap: scroll == null ? false : true,
+          physics: scroll == null ? null : NeverScrollableScrollPhysics(),
+          itemCount: dataMap == null ? data!.size : dataMap!.length,
           itemBuilder: (context, index) {
-            final itemData = data.docs[index];
+            final itemData = (dataMap == null ? data!.docs[index] : dataMap!.asMap()[index]);
             return Container(
-              margin: CustomEdgeInsets.list(data.size, index, scale: scale),
+              margin: CustomEdgeInsets.list(dataMap == null ? data!.size: dataMap!.length, index, scale: scale),
               // Spaziatura esterna
               width: double.infinity,
               child: InkWell(
-                onTap: () => onTap(itemData.id.toString()),
-                child: _getListItem(itemData)
+                onTap: () => onTap(dataMap == null ? itemData.id.toString() : dataMap!.asMap()[index]['id']),
+                child: (dataMap == null ? _getListItem(itemData): _getListItemList(dataMap!.asMap()[index]))
               ),
             );
           },

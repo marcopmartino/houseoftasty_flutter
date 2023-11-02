@@ -8,13 +8,16 @@ import '../widget/TextWidgets.dart';
 import 'Item.dart';
 
 class RecipeItem extends Item {
-  RecipeItem({required super.itemData});
+  RecipeItem({super.itemData});
+  RecipeItem.list({super.itemDataList});
 
   @override
   Widget build(BuildContext context) {
-    final Map datetime = (itemData['timestampCreazione'] as Timestamp).toDateTime();
+    final Map datetime = (itemData != null ?(itemData!['timestampCreazione'] as Timestamp).toDateTime() :
+      (itemDataList!['timestampCreazione'] as Timestamp).toDateTime());
     final formattedDate = datetime['date'];
     final formattedTime = datetime['time'];
+
 
     return Card(
             color: AppColors.darkSandBrown,
@@ -33,12 +36,18 @@ class RecipeItem extends Item {
                         topRight: Radius.circular(20),
                         topLeft: Radius.circular(20),
                       ),
-                      child: ImageLoader.firebaseRecipeStorageImage(itemData.id.toString())
+                      child: ImageLoader.firebaseRecipeStorageImage(
+                          (itemData != null ?(itemData!.id.toString()) :
+                          (itemDataList!['id']))
+                      )
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 0), // Spaziatura esterna
-                  child: TitleWidget(itemData['titolo'], fontSize: 18, textColor: AppColors.tawnyBrown)
+                  child: TitleWidget(
+                      (itemData != null ?(itemData!['titolo']) : (itemDataList!['titolo'])),
+                      fontSize: 18,
+                      textColor: AppColors.tawnyBrown)
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(16, 0, 16, 8), // Spaziatura esterna

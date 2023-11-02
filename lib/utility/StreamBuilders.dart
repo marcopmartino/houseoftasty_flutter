@@ -46,13 +46,83 @@ class QueryStreamBuilder extends StreamBuilder<QuerySnapshot> {
 // QueryStreamBuilder che si occupa anche di creare la view della lista
 class ListViewStreamBuilder extends QueryStreamBuilder {
 
-  ListViewStreamBuilder({required super.stream, onTap, itemType = ItemType.NONE, scale = 1}) :
+  ListViewStreamBuilder({required super.stream, scroll, onTap, itemType = ItemType.NONE, scale = 1}) :
     super(builder: (BuildContext context, QuerySnapshot<Object?> data) {
         return ListViewBuilder(
             data: data,
+            scroll:scroll,
             itemType: itemType,
             scale: scale,
-            onTap: (String itemId) => onTap(itemId)
+            onTap: (String itemId) => onTap(itemId),
         );
   });
+}
+
+class SearchListViewStreamBuilder extends QueryStreamBuilder {
+
+  SearchListViewStreamBuilder({required super.stream, required value, scroll, onTap, itemType = ItemType.NONE, scale = 1}) :
+        super(builder: (BuildContext context, QuerySnapshot<Object?> temp) {
+
+          List data = [];
+          for(final (index, doc) in temp.docs.indexed){
+            if((doc.data() as Map)['titolo'].toString().contains(value)) {
+              data.add(doc.data());
+              data.last['id'] = doc.id;
+            }
+          }
+
+          return ListViewBuilder.search(
+            dataMap: data,
+            scroll:scroll,
+            itemType: itemType,
+            scale: scale,
+            onTap: (String itemId) => onTap(itemId),
+          );
+      });
+}
+
+class PopularListViewStreamBuilder extends QueryStreamBuilder {
+
+  PopularListViewStreamBuilder({required super.stream, scroll, onTap, itemType = ItemType.NONE, scale = 1}) :
+        super(builder: (BuildContext context, QuerySnapshot<Object?> temp) {
+
+        List data = [];
+        for(final (index, doc) in temp.docs.indexed){
+          data.add(doc.data());
+          data.last['id'] = doc.id;
+        }
+
+        data.sort((a,b) => b['likeCounter'].toString().compareTo(a['likeCounter'].toString()));
+
+        return ListViewBuilder.search(
+          dataMap: data,
+          scroll:scroll,
+          itemType: itemType,
+          scale: scale,
+          onTap: (String itemId) => onTap(itemId),
+        );
+      });
+}
+
+class NewestListViewStreamBuilder extends QueryStreamBuilder {
+
+  NewestListViewStreamBuilder({required super.stream, scroll, onTap, itemType = ItemType.NONE, scale = 1}) :
+        super(builder: (BuildContext context, QuerySnapshot<Object?> temp) {
+
+        List data = [];
+        for(final (index, doc) in temp.docs.indexed){
+          data.add(doc.data());
+          data.last['id'] = doc.id;
+        }
+
+        data.sort((a,b) => b['timestampPubblicazione'].toString().compareTo(a['timestampPubblicazione'].toString()));
+
+        return ListViewBuilder.search(
+          dataMap: data,
+          scroll:scroll,
+          itemType: itemType,
+          scale: scale,
+          onTap: (String itemId) => onTap(itemId),
+        );
+      });
 }
