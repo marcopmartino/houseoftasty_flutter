@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:houseoftasty/network/RecipeCollectionNetwork.dart';
 import 'package:houseoftasty/utility/Extensions.dart';
 import 'package:houseoftasty/view/item/Item.dart';
+import 'package:houseoftasty/view/page/RecipePostDetailsPage.dart';
 import '../../network/RecipeNetwork.dart';
 import '../../utility/StreamBuilders.dart';
 import '../../utility/Navigation.dart';
@@ -27,8 +28,11 @@ class _RecipeCollectionDetailsState extends State<RecipeCollectionDetailsPage> {
   late List<String> _recipeIds;
   int get _recipeIdsSize => _recipeIds.length;
 
+
   @override
   Widget build(BuildContext context) {
+    bool isSaveCollection = widget.recipeCollectionId == 'saveCollection';
+
     return DocumentStreamBuilder(
         stream: RecipeCollectionNetwork.getRecipeCollectionDetails(widget.recipeCollectionId),
         builder: (BuildContext context, DocumentSnapshot<Object?> data) {
@@ -36,7 +40,7 @@ class _RecipeCollectionDetailsState extends State<RecipeCollectionDetailsPage> {
           _recipeIds = (data['listaRicette'] as List<dynamic>).toStringList();
           String title = '$_recipeCollectionName ($_recipeIdsSize)';
           FloatingActionButton? fab =
-            widget.recipeCollectionId == 'saveCollection' ? null :
+            isSaveCollection ? null :
             FloatingActionButtons.edit(
               onPressed: () => Navigation.navigate(context, RecipeCollectionFormPage.edit(recipeCollectionId: widget.recipeCollectionId))
           );
@@ -44,10 +48,10 @@ class _RecipeCollectionDetailsState extends State<RecipeCollectionDetailsPage> {
               title: title,
               body: ListViewStreamBuilder(
                   stream: RecipeNetwork.getRecipesByIdList(_recipeIds),
-                  itemType: ItemType.RECIPE,
+                  itemType: isSaveCollection ? ItemType.RECIPE_POST : ItemType.RECIPE,
                   scale: 1.5,
-                  onTap: (String recipeId) {
-                    Navigation.navigate(context, RecipeDetailsPage(recipeId: recipeId));
+                  onTap: (QueryDocumentSnapshot<Object?> recipe) {
+                    Navigation.navigate(context, isSaveCollection ? RecipePostDetailsPage(recipeId: recipe.id) : RecipeDetailsPage(recipeId: recipe.id));
                   }
               ),
               floatingActionButton: fab

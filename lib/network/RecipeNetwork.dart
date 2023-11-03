@@ -1,12 +1,14 @@
 
 import 'dart:async';
 
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:houseoftasty/network/RecipeCollectionNetwork.dart';
 import 'package:houseoftasty/utility/Extensions.dart';
 
 import '../model/Recipe.dart';
+import '../model/Comment.dart';
 
 class RecipeNetwork {
   static CollectionReference get _recipesReference =>
@@ -51,13 +53,24 @@ class RecipeNetwork {
     return _recipesReference.doc(recipeId).snapshots();
   }
 
-  static Stream<QuerySnapshot<Object?>> getRecipePublish(){
+  static Stream<QuerySnapshot<Object?>> getPublicRecipes(){
     return _recipesReference.where(
       Filter.and(
         Filter('boolPostPrivato', isEqualTo: false),
         Filter('boolPubblicata', isEqualTo: true),
         Filter('idCreatore', isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
       )
+    ).snapshots();
+  }
+
+  static Stream<QuerySnapshot<Object?>> getUserPublicRecipes(String userId) {
+    return _recipesReference
+        .where(
+        Filter.and(
+            Filter('boolPostPrivato', isEqualTo: false),
+            Filter('boolPubblicata', isEqualTo: true),
+            Filter('idCreatore', isEqualTo: userId)
+        )
     ).snapshots();
   }
 
@@ -73,6 +86,56 @@ class RecipeNetwork {
   static Future deleteRecipe(String recipeId) async {
     await _recipesReference.doc(recipeId).delete();
     await RecipeCollectionNetwork.removeFromRecipeCollections(recipeId);
+  }
+
+  static Future incrementViews(String recipeId) async {
+    await _recipesReference.doc(recipeId).update({
+      'views': FieldValue.increment(1)
+    });
+  }
+
+  static Future addLike(String recipeId, String userId) async {
+    await _recipesReference.doc(recipeId).update({
+      'likeCounter': FieldValue.increment(1),
+      'likes': FieldValue.arrayUnion([userId])
+    });
+  }
+
+  static Future removeLike(String recipeId, String userId) async {
+    await _recipesReference.doc(recipeId).update({
+      'likeCounter': FieldValue.increment(-1),
+      'likes': FieldValue.arrayRemove([userId])
+    });
+  }
+
+  static Future addDownload(String recipeId, String userId) async {
+    await _recipesReference.doc(recipeId).update({
+      'downloadCounter': FieldValue.increment(1),
+      'downloads': FieldValue.arrayUnion([userId])
+    });
+  }
+
+  static Future removeDownload(String recipeId, String userId) async {
+    await _recipesReference.doc(recipeId).update({
+      'downloadCounter': FieldValue.increment(-1),
+      'downloads': FieldValue.arrayRemove([userId])
+    });
+  }
+
+  static Stream<QuerySnapshot<Object?>> getComments(String recipeId) {
+    return _recipesReference.doc(recipeId).collection('comments').snapshots();
+  }
+
+  static Future addComment(String recipeId, Comment comment) async {
+    DocumentReference recipeReference = _recipesReference.doc(recipeId);
+    await recipeReference.update({'commentCounter': FieldValue.increment(1)});
+    await recipeReference.collection('comments').add(comment.toDocumentMap());
+  }
+
+  static Future removeComment(String recipeId, String commentId) async {
+    DocumentReference recipeReference = _recipesReference.doc(recipeId);
+    await recipeReference.update({'commentCounter': FieldValue.increment(-1)});
+    await recipeReference.collection('comments').doc(commentId).delete();
   }
 
 }

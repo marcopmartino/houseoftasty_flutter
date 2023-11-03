@@ -30,8 +30,18 @@ class ProfileNetwork{
     return null;
   }
 
-  static Stream<DocumentSnapshot<Object?>> getProfileInfo() {
+  static Stream<DocumentSnapshot<Object?>> getCurrentUserInfo() {
     return _user.snapshots();
+  }
+
+  static Stream<DocumentSnapshot<Object?>> getUserInfo(String userId) {
+    return FirebaseFirestore.instance.collection('users')
+        .doc(userId).snapshots();
+  }
+
+  static Future<DocumentSnapshot<Object?>> getUserInfoOnce(String userId) {
+    return FirebaseFirestore.instance.collection('users')
+        .doc(userId).get();
   }
 
   static void updateProfile(Profile user){

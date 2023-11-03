@@ -96,7 +96,6 @@ class _ProfileEditPage extends State<ProfileEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
     if(_isProcessing){
       return CustomScaffold(
           title: ProfileEditPage.title,
@@ -151,7 +150,7 @@ class _ProfileEditPage extends State<ProfileEditPage> {
       return CustomScaffold(
           title: ProfileEditPage.title,
           body: DocumentStreamBuilder(
-            stream: ProfileNetwork.getProfileInfo(),
+            stream: ProfileNetwork.getCurrentUserInfo(),
             builder: (BuildContext builder, DocumentSnapshot<Object?> data){
               _nomeTextController.text = data['nome'];
               _cognomeTextController.text = data['cognome'];

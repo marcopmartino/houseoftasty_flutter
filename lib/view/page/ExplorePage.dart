@@ -1,8 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/view/page/NewestPage.dart';
 import 'package:houseoftasty/view/page/SearchPage.dart';
 
+import '../../utility/AppColors.dart';
+import '../../utility/AppFontWeight.dart';
+import '../widget/CustomDrawer.dart';
+import '../widget/TextWidgets.dart';
 import 'PopularPage.dart';
 
 
@@ -17,31 +20,33 @@ class ExplorePage extends StatelessWidget{
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-          appBar: AppBar(
-            bottom: TabBar(
+        appBar: AppBar(
+              bottom: TabBar(
                 indicatorSize: TabBarIndicatorSize.tab,
                 indicatorColor: Colors.white,
                 tabs: [
                   Tab(
-                    text: 'Cerca',
+                    child: TextWidget('Cerca'.toUpperCase(), textColor: Colors.white, fontWeight: AppFontWeight.semiBold)
                   ),
                   Tab(
-                    text: 'Popolari',
+                    child: TextWidget('Popolari'.toUpperCase(), textColor: Colors.white, fontWeight: AppFontWeight.semiBold)
                   ),
                   Tab(
-                      text: 'Nuovi'
+                    child: TextWidget('Nuovi'.toUpperCase(), textColor: Colors.white, fontWeight: AppFontWeight.semiBold)
                   )
                 ]
-            ),
-            title: Text('Esplora'),
+              ),
+              title: Text('Esplora'),
+              backgroundColor: AppColors.tawnyBrown
           ),
-          body: TabBarView(
+        body: TabBarView(
               children: [
                 SearchPage(),
                 PopularPage(),
                 NewestPage()
               ]
-          )
+          ),
+        drawer: CustomDrawer(),
       ),
     );
   }

@@ -12,12 +12,19 @@ class RecipeCollectionItem extends Item {
 
   @override
   Widget build(BuildContext context) {
-    final Map datetime = (itemData['timestampCreazione'] as Timestamp).toDateTime();
-    final formattedDate = datetime['date'];
-    final formattedTime = datetime['time'];
 
     final recipeIds = itemData['listaRicette'];
     final numRecipes = recipeIds.length;
+
+    final String recipeCollectionSubtitle;
+    if (itemData.id == 'saveCollection') {
+      recipeCollectionSubtitle = 'Generata automaticamente';
+    } else {
+      final Map datetime = (itemData['timestampCreazione'] as Timestamp).toDateTime();
+      final formattedDate = datetime['date'];
+      final formattedTime = datetime['time'];
+      recipeCollectionSubtitle = 'Creata in data $formattedDate alle $formattedTime';
+    }
 
     return Column(
       children: [
@@ -50,7 +57,7 @@ class RecipeCollectionItem extends Item {
                   ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(16, 0, 16, 12),
-                    child: TextWidget('Creata in data $formattedDate alle $formattedTime'),
+                    child: TextWidget(recipeCollectionSubtitle),
                   ),
                 ],
               ),

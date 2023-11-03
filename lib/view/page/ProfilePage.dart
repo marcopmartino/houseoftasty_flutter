@@ -13,14 +13,14 @@ import '../../utility/Navigation.dart';
 import '../../view/widget/CustomScaffold.dart';
 import '../item/Item.dart';
 import '../widget/TextWidgets.dart';
-import 'RecipeDetailsPage.dart';
+import 'RecipePostDetailsPage.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  const ProfilePage({super.key, this.userId});
 
   static const String route = 'profile';
 
-  static const String title = 'Il tuo profilo';
+  final String? userId;
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -30,10 +30,13 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    bool currentUser = widget.userId == null;
+
     return CustomScaffold(
-        title: ProfilePage.title,
+      withDrawer: currentUser,
+        title: currentUser ? 'Il tuo profilo' : 'Profilo utente',
         body: DocumentStreamBuilder(
-            stream: ProfileNetwork.getProfileInfo(),
+            stream: currentUser ? ProfileNetwork.getCurrentUserInfo() : ProfileNetwork.getUserInfo(widget.userId!),
             builder: (BuildContext builder, DocumentSnapshot<Object?> data) {
 
               return SingleChildScrollView(
@@ -50,11 +53,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               height: 150,
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(50.0),
-                                  child: data['boolImmagine']?ImageLoader.currentUserImage():Image.asset('assets/images/icon_profile.png')
+                                  child: data['boolImmagine']?ImageLoader.currentUserImage():Image.asset('assets/images/user_image_default.png')
                               ),
 
                             ),
-                            onTap: () => Navigation.navigate(context, ProfileDetailsPage())
+                            onTap: () => currentUser ? Navigation.navigate(context, ProfileDetailsPage()) : { }
                         ), // Immagine profilo
 
                         Container(
@@ -77,11 +80,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         ), //Divider 'Ricette pubblicate'
 
                         ListViewStreamBuilder(
-                          stream: RecipeNetwork.getCurrentUserPublishedRecipes(),
-                          itemType: ItemType.RECIPE,
+                          stream: currentUser ? RecipeNetwork.getCurrentUserPublishedRecipes() : RecipeNetwork.getUserPublicRecipes(widget.userId!),
+                          itemType: ItemType.RECIPE_POST,
                           scale: 1.5,
-                          onTap: (String recipeId) {
-                            Navigation.navigate(context, RecipeDetailsPage(recipeId: recipeId));
+                          shrinkWrap: true,
+                          scrollPhysics: NeverScrollableScrollPhysics(),
+                          onTap: (QueryDocumentSnapshot<Object?> recipe) {
+                            Navigation.navigate(context, RecipePostDetailsPage(recipeId: recipe.id));
                           }
                         ) // Lista ricette pubblicate
                       ]

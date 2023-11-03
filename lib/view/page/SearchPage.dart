@@ -1,14 +1,12 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:houseoftasty/view/page/RecipeDetailsPage.dart';
-
 import '../../network/RecipeNetwork.dart';
 import '../../utility/Navigation.dart';
 import '../../utility/StreamBuilders.dart';
-
 import '../item/Item.dart';
 import '../widget/CustomDecoration.dart';
+import 'RecipePostDetailsPage.dart';
 
 class SearchPage extends StatefulWidget{
   @override
@@ -40,17 +38,26 @@ class _SearchPageState extends State<SearchPage>{
               }
           ),
         ),
-        Expanded(
-            child: SearchListViewStreamBuilder(
-                    stream: RecipeNetwork.getRecipePublish(),
-                    value: _searchValue,
-                    itemType: ItemType.RECIPE,
-                    scale: 1.5,
-                    onTap: (String recipeId) {
-                      Navigation.navigate(context, RecipeDetailsPage(recipeId: recipeId));
-                    }
-            ),
-        )
+        _searchValue.isNotEmpty ?
+        ListViewStreamBuilder(
+            stream: RecipeNetwork.getPublicRecipes(),
+            itemType: ItemType.RECIPE_POST,
+            scale: 1.5,
+            expanded: true,
+            onTap: (QueryDocumentSnapshot<Object?> recipe) {
+              Navigation.navigate(context, RecipePostDetailsPage(recipeId: recipe.id));
+            },
+          filterFunction: (List<QueryDocumentSnapshot<Object?>> data) {
+            List<QueryDocumentSnapshot<Object?>> filteredData = List.empty(growable: true);
+            for (QueryDocumentSnapshot<Object?> document in data) {
+              if (document['titolo'].toString().contains(_searchValue)) {
+                filteredData.add(document);
+              }
+            }
+            return filteredData;
+          }
+        ) : Container(),
+
       ]
     );
   }

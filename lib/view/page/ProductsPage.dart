@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/view/page/ProductFormPage.dart';
 
@@ -31,8 +32,8 @@ class _ProductsPageState extends State<ProductsPage> {
           stream: ProductNetwork.getProductByUserId(),
           itemType: ItemType.PRODUCT,
           scale: 1.0,
-          onTap: (String productId) {
-            Navigation.navigate(context, ProductFormPage.edit(productId: productId));
+          onTap: (QueryDocumentSnapshot<Object?> product) {
+            Navigation.navigate(context, ProductFormPage.edit(productId: product.id));
           }
       ),
       floatingActionButton: FloatingActionButtons.add(

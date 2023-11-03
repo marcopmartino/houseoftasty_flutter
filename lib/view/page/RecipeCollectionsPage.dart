@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/view/item/Item.dart';
 
@@ -31,8 +32,8 @@ class _RecipeCollectionsState extends State<RecipeCollectionsPage> {
             stream: RecipeCollectionNetwork.getCurrentUserRecipeCollections(),
             itemType: ItemType.RECIPE_COLLECTION,
             scale: 0.0,
-            onTap: (String recipeCollectionId) {
-              Navigation.navigate(context, RecipeCollectionDetailsPage(recipeCollectionId: recipeCollectionId));
+            onTap: (QueryDocumentSnapshot<Object?> recipeCollection) {
+              Navigation.navigate(context, RecipeCollectionDetailsPage(recipeCollectionId: recipeCollection.id));
             }
         ),
         floatingActionButton: FloatingActionButtons.add(

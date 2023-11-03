@@ -121,8 +121,8 @@ class _RecipeCollectionFormState extends State<RecipeCollectionFormPage> {
           future: RecipeNetwork.getRecipesNotInIdListOnce(_recipeIds),
           itemType: ItemType.RECIPE,
           scale: 1.5,
-          onTap: (String recipeId) {
-            navigateToFormPage(recipeId);
+          onTap: (QueryDocumentSnapshot<Object?> recipe) {
+            navigateToFormPage(recipe.id);
           }
       );
 
@@ -242,7 +242,7 @@ class _RecipeCollectionFormState extends State<RecipeCollectionFormPage> {
                   future: RecipeNetwork.getRecipesByIdListOnce(_recipeIds),
                   scale: 0.0,
                   itemType: ItemType.RECIPE_COLLECTION_FORM,
-                  onTap: (String recipeId) {
+                  onTap: (QueryDocumentSnapshot<Object?> recipe) {
 
                     showDialog(context: context, builder: (BuildContext context) {
                       void dismissDialog() {
@@ -262,7 +262,7 @@ class _RecipeCollectionFormState extends State<RecipeCollectionFormPage> {
                                 onPressed: () async {
                                   dismissDialog();
                                   setState(() {
-                                    removeId(recipeId);
+                                    removeId(recipe.id);
                                   });
 
                                 }),

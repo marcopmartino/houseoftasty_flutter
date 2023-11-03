@@ -34,7 +34,7 @@ class CustomEdgeInsets extends EdgeInsets {
   }
 
   static EdgeInsets exceptRight(double padding) {
-    return EdgeInsets.fromLTRB(16, 16, 0, 16);
+    return EdgeInsets.fromLTRB(padding, padding, 0, padding);
   }
 
 }

@@ -144,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                             if(context.mounted) {
                               Navigator.pushAndRemoveUntil(context,
                                 MaterialPageRoute(
-                                    builder: (_) => HomePage(isLogged: true)
+                                    builder: (_) => HomePage()
                                 ),
                                 (Route route) => false);
                             }

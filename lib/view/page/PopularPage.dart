@@ -1,15 +1,11 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:houseoftasty/view/page/RecipeDetailsPage.dart';
-
 import '../../network/RecipeNetwork.dart';
-import '../../utility/ListViewBuilder.dart';
 import '../../utility/Navigation.dart';
 import '../../utility/StreamBuilders.dart';
-
 import '../item/Item.dart';
-import '../widget/CustomDecoration.dart';
+import 'RecipePostDetailsPage.dart';
 
 class PopularPage extends StatefulWidget{
   @override
@@ -25,16 +21,22 @@ class _PopularPageState extends State<PopularPage>{
 
     return Column(
       children: [
-        Expanded(
-            child: PopularListViewStreamBuilder(
-                    stream: RecipeNetwork.getRecipePublish(),
-                    itemType: ItemType.RECIPE,
-                    scale: 1.5,
-                    onTap: (String recipeId) {
-                      Navigation.navigate(context, RecipeDetailsPage(recipeId: recipeId));
-                    }
-            ),
-        )
+        ListViewStreamBuilder(
+            stream: RecipeNetwork.getPublicRecipes(),
+            itemType: ItemType.RECIPE_POST,
+            scale: 1.5,
+            expanded: true,
+            onTap: (QueryDocumentSnapshot<Object?> recipe) {
+              Navigation.navigate(context, RecipePostDetailsPage(recipeId: recipe.id));
+            },
+            filterFunction: (List<QueryDocumentSnapshot<Object?>> data) {
+
+              // Ordina per numero di like descrescente
+              data.sort((a,b) => b['likeCounter'].toString().compareTo(a['likeCounter'].toString()));
+
+              return data;
+            }
+        ),
       ]
     );
   }

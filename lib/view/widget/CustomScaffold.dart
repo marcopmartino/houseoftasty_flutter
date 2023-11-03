@@ -1,9 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/utility/AppColors.dart';
-import 'package:houseoftasty/utility/Extensions.dart';
 
-import 'SelectDrawer.dart';
+import 'CustomDrawer.dart';
 
 class CustomScaffold extends StatelessWidget {
   final String title;
@@ -25,7 +23,7 @@ class CustomScaffold extends StatelessWidget {
       ),
       backgroundColor: AppColors.sandBrown,
       body: body,
-      drawer: withDrawer ? SelectDrawer(isLogged: FirebaseAuth.instance.isCurrentUserLoggedIn()) : null,
+      drawer: withDrawer ? CustomDrawer() : null,
       floatingActionButton: floatingActionButton,
       resizeToAvoidBottomInset: resize,
     );

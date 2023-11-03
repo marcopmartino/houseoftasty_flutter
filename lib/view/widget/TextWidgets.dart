@@ -73,6 +73,48 @@ class TextWidget extends StatelessWidget {
   }
 }
 
+class IconTextWidget extends StatelessWidget {
+  final String text;
+  final double fontSize;
+  final Color textColor;
+  final double iconSize;
+  final Color iconColor;
+  final FontWeight fontWeight;
+  final IconData icon;
+  final double innerPadding;
+  final Function()? onIconTap;
+
+  const IconTextWidget({
+    required this.text,
+    this.fontSize = 18,
+    this.textColor = Colors.black,
+    this.fontWeight = AppFontWeight.medium,
+    required this.icon,
+    this.iconSize = 35.0,
+    this.iconColor = AppColors.tawnyBrown,
+    this.innerPadding = 16.0,
+    this.onIconTap});
+
+  @override
+  Widget build(BuildContext context) {
+    Icon tempIcon = Icon(icon, size: iconSize, color: iconColor);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+            padding: EdgeInsets.only(right: innerPadding),
+            child: onIconTap == null ? tempIcon : GestureDetector(
+              onTap: () => onIconTap!(),
+              child: tempIcon
+            )
+        ),
+        TextWidget(text, fontWeight: fontWeight, textColor: textColor, fontSize: fontSize)
+      ],
+    );
+  }
+}
+
 class TextFormFieldWidget extends StatelessWidget {
   final TextEditingController controller;
   final String? Function(String?)? validator;
@@ -81,6 +123,7 @@ class TextFormFieldWidget extends StatelessWidget {
   final int? minLines;
   final int? maxLines;
   final bool obscureText;
+  final InputDecoration? decoration;
   late final TextInputType? keyboardType;
   late final List<TextInputFormatter>? inputFormatters;
 
@@ -94,7 +137,8 @@ class TextFormFieldWidget extends StatelessWidget {
     this.keyboardType,
     this.inputFormatters,
     this.minLines,
-    this.maxLines
+    this.maxLines,
+    this.decoration
   });
 
   TextFormFieldWidget.numeric({
@@ -104,7 +148,8 @@ class TextFormFieldWidget extends StatelessWidget {
     this.obscureText = false,
     this.hint = '',
     this.minLines,
-    this.maxLines
+    this.maxLines,
+    this.decoration
   })
   {
     keyboardType = TextInputType.number;
@@ -119,7 +164,8 @@ class TextFormFieldWidget extends StatelessWidget {
     this.obscureText = false,
     this.inputFormatters,
     this.minLines = 1,
-    this.maxLines = 5
+    this.maxLines = 5,
+    this.decoration
   })
   {
     keyboardType = TextInputType.multiline;
@@ -134,7 +180,8 @@ class TextFormFieldWidget extends StatelessWidget {
     this.keyboardType,
     this.inputFormatters,
     this.minLines = 1,
-    this.maxLines = 1
+    this.maxLines = 1,
+    this.decoration
   });
 
   @override
@@ -148,7 +195,7 @@ class TextFormFieldWidget extends StatelessWidget {
       maxLines: maxLines,
       obscureText: obscureText,
       style: TextStyle(color: Colors.black),
-      decoration: CustomDecoration.textFieldInputDecoration(label, hint),
+      decoration: decoration ?? CustomDecoration.textFieldInputDecoration(label, hint),
     );
   }
 

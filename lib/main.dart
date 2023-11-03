@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:houseoftasty/utility/AppColors.dart';
-import 'package:houseoftasty/utility/Extensions.dart';
 import 'package:houseoftasty/view/page/CookbookPage.dart';
 import 'package:houseoftasty/view/page/ExplorePage.dart';
 import 'package:houseoftasty/view/page/ProductsPage.dart';
@@ -25,7 +23,7 @@ Future<void> main() async {
     ),
     initialRoute: '/',
     routes: {
-      '/': (context) => HomePage(isLogged: FirebaseAuth.instance.isCurrentUserLoggedIn()),
+      '/': (context) => HomePage(),
       ProfilePage.route: (context) => ProfilePage(),
       ProductsPage.route: (context) => ProductsPage(),
       CookbookPage.route: (context) => CookbookPage(),

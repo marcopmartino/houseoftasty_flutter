@@ -17,7 +17,7 @@ class ProfileDetailsPage extends StatefulWidget {
 
   static const String route = 'profileDetails';
 
-  static const String title = 'Profilo';
+  static const String title = 'Profilo privato';
 
   @override
   State<ProfileDetailsPage> createState() => _ProfileDetailsPage();
@@ -30,7 +30,7 @@ class _ProfileDetailsPage extends State<ProfileDetailsPage> {
     return CustomScaffold(
         title: ProfileDetailsPage.title,
         body: DocumentStreamBuilder(
-            stream: ProfileNetwork.getProfileInfo(),
+            stream: ProfileNetwork.getCurrentUserInfo(),
             builder: (BuildContext builder, DocumentSnapshot<Object?> data) {
 
 

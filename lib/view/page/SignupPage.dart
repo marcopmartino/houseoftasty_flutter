@@ -197,7 +197,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   if(result == null){
                                     if(context.mounted) {
                                       Navigator.push(context,
-                                          MaterialPageRoute(builder: (_) => HomePage(isLogged: true)));
+                                          MaterialPageRoute(builder: (_) => HomePage()));
                                     }
                                   }else{
                                     _showAlertDialog(result as String);

@@ -46,83 +46,71 @@ class QueryStreamBuilder extends StreamBuilder<QuerySnapshot> {
 // QueryStreamBuilder che si occupa anche di creare la view della lista
 class ListViewStreamBuilder extends QueryStreamBuilder {
 
-  ListViewStreamBuilder({required super.stream, scroll, onTap, itemType = ItemType.NONE, scale = 1}) :
-    super(builder: (BuildContext context, QuerySnapshot<Object?> data) {
-        return ListViewBuilder(
-            data: data,
-            scroll:scroll,
-            itemType: itemType,
-            scale: scale,
-            onTap: (String itemId) => onTap(itemId),
-        );
+  ListViewStreamBuilder({
+    required super.stream,
+    required Function(QueryDocumentSnapshot<Object?>) onTap,
+    ItemType itemType = ItemType.NONE,
+    double scale = 1,
+    ScrollPhysics? scrollPhysics,
+    bool shrinkWrap = false,
+    bool? primaryScrollableWidget,
+    bool expanded = false,
+    List<QueryDocumentSnapshot<Object?>> Function(List<QueryDocumentSnapshot<Object?>> data)? filterFunction,
+  }) : super(builder: (BuildContext context, QuerySnapshot<Object?> data) {
+
+    List<QueryDocumentSnapshot<Object?>> docs = data.docs;
+
+    if (filterFunction != null) {
+      docs = filterFunction(docs);
+    }
+
+    return ListViewBuilder(
+      data: docs,
+      itemType: itemType,
+      scale: scale,
+      onTap: (QueryDocumentSnapshot<Object?> itemData) => onTap(itemData),
+      scrollPhysics: scrollPhysics,
+      shrinkWrap: shrinkWrap,
+      primaryScrollableWidget: primaryScrollableWidget,
+      expanded: expanded,
+    );
   });
 }
 
-class SearchListViewStreamBuilder extends QueryStreamBuilder {
+//
+class DismissibleListViewStreamBuilder extends QueryStreamBuilder {
 
-  SearchListViewStreamBuilder({required super.stream, required value, scroll, onTap, itemType = ItemType.NONE, scale = 1}) :
-        super(builder: (BuildContext context, QuerySnapshot<Object?> temp) {
+  DismissibleListViewStreamBuilder({
+    required super.stream,
+    required Function(QueryDocumentSnapshot<Object?> itemData) onTap,
+    ItemType itemType = ItemType.NONE,
+    double scale = 1,
+    ScrollPhysics? scrollPhysics,
+    bool shrinkWrap = false,
+    bool? primaryScrollableWidget,
+    bool expanded = false,
+    List<QueryDocumentSnapshot<Object?>> Function(List<QueryDocumentSnapshot<Object?>> data)? filterFunction,
+    bool Function(QueryDocumentSnapshot<Object?> itemData)? dismissPolicy,
+    Function(String itemId)? onDismiss,
+  }) : super(builder: (BuildContext context, QuerySnapshot<Object?> data) {
 
-          List data = [];
-          for(final (index, doc) in temp.docs.indexed){
-            if((doc.data() as Map)['titolo'].toString().contains(value)) {
-              data.add(doc.data());
-              data.last['id'] = doc.id;
-            }
-          }
+    List<QueryDocumentSnapshot<Object?>> docs = data.docs;
 
-          return ListViewBuilder.search(
-            dataMap: data,
-            scroll:scroll,
-            itemType: itemType,
-            scale: scale,
-            onTap: (String itemId) => onTap(itemId),
-          );
-      });
-}
+    if (filterFunction != null) {
+      docs = filterFunction(docs);
+    }
 
-class PopularListViewStreamBuilder extends QueryStreamBuilder {
-
-  PopularListViewStreamBuilder({required super.stream, scroll, onTap, itemType = ItemType.NONE, scale = 1}) :
-        super(builder: (BuildContext context, QuerySnapshot<Object?> temp) {
-
-        List data = [];
-        for(final (index, doc) in temp.docs.indexed){
-          data.add(doc.data());
-          data.last['id'] = doc.id;
-        }
-
-        data.sort((a,b) => b['likeCounter'].toString().compareTo(a['likeCounter'].toString()));
-
-        return ListViewBuilder.search(
-          dataMap: data,
-          scroll:scroll,
-          itemType: itemType,
-          scale: scale,
-          onTap: (String itemId) => onTap(itemId),
-        );
-      });
-}
-
-class NewestListViewStreamBuilder extends QueryStreamBuilder {
-
-  NewestListViewStreamBuilder({required super.stream, scroll, onTap, itemType = ItemType.NONE, scale = 1}) :
-        super(builder: (BuildContext context, QuerySnapshot<Object?> temp) {
-
-        List data = [];
-        for(final (index, doc) in temp.docs.indexed){
-          data.add(doc.data());
-          data.last['id'] = doc.id;
-        }
-
-        data.sort((a,b) => b['timestampPubblicazione'].toString().compareTo(a['timestampPubblicazione'].toString()));
-
-        return ListViewBuilder.search(
-          dataMap: data,
-          scroll:scroll,
-          itemType: itemType,
-          scale: scale,
-          onTap: (String itemId) => onTap(itemId),
-        );
-      });
+    return DismissibleListViewBuilder(
+      data: docs,
+      itemType: itemType,
+      scale: scale,
+      onTap: (QueryDocumentSnapshot<Object?> itemData) => onTap(itemData),
+      scrollPhysics: scrollPhysics,
+      shrinkWrap: shrinkWrap,
+      primaryScrollableWidget: primaryScrollableWidget,
+      expanded: expanded,
+      dismissPolicy: dismissPolicy,
+      onDismiss: onDismiss,
+    );
+  });
 }

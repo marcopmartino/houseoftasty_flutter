@@ -21,8 +21,8 @@ class RecipeCollectionNetwork {
     return _recipeCollectionsReference.doc(recipeCollectionId).snapshots();
   }
 
-  static Future<String> addRecipeCollection(Map<String, dynamic> recipe) async {
-    DocumentReference docRef = await _recipeCollectionsReference.add(recipe);
+  static Future<String> addRecipeCollection(Map<String, dynamic> recipeCollection) async {
+    DocumentReference docRef = await _recipeCollectionsReference.add(recipeCollection);
     return docRef.id;
   }
 
@@ -47,6 +47,26 @@ class RecipeCollectionNetwork {
         removeFromRecipeCollection(document.id, recipeId);
       }
     });
+  }
+
+  static Future addRecipeToSaveCollection(String recipeId) async {
+    DocumentReference saveCollectionReference = _recipeCollectionsReference.doc('saveCollection');
+    DocumentSnapshot<Object?>? saveCollection = await saveCollectionReference.get();
+
+    // Se la raccolta delle ricette salvate non esiste, la creo
+    if (!saveCollection.exists) {
+      await saveCollectionReference.set(RecipeCollection(nome: 'Salvati').toDocumentMap());
+    }
+
+    // Aggiungo la ricetta alla lista di quelle salvate
+    await saveCollectionReference.update({'listaRicette': FieldValue.arrayUnion([recipeId])});
+  }
+
+  static Future removeRecipeFromSaveCollection(String recipeId) async {
+    DocumentReference saveCollectionReference = _recipeCollectionsReference.doc('saveCollection');
+
+    // Rimuovo la ricetta dalla lista di quelle salvate
+    await saveCollectionReference.update({'listaRicette': FieldValue.arrayRemove([recipeId])});
   }
 
 }

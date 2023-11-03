@@ -8,13 +8,11 @@ import '../widget/TextWidgets.dart';
 import 'Item.dart';
 
 class RecipeItem extends Item {
-  RecipeItem({super.itemData});
-  RecipeItem.list({super.itemDataList});
+  RecipeItem({required super.itemData});
 
   @override
   Widget build(BuildContext context) {
-    final Map datetime = (itemData != null ?(itemData!['timestampCreazione'] as Timestamp).toDateTime() :
-      (itemDataList!['timestampCreazione'] as Timestamp).toDateTime());
+    final Map datetime = (itemData['timestampCreazione'] as Timestamp).toDateTime();
     final formattedDate = datetime['date'];
     final formattedTime = datetime['time'];
 
@@ -37,15 +35,14 @@ class RecipeItem extends Item {
                         topLeft: Radius.circular(20),
                       ),
                       child: ImageLoader.firebaseRecipeStorageImage(
-                          (itemData != null ?(itemData!.id.toString()) :
-                          (itemDataList!['id']))
+                          itemData.id.toString()
                       )
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.fromLTRB(16, 8, 16, 0), // Spaziatura esterna
                   child: TitleWidget(
-                      (itemData != null ?(itemData!['titolo']) : (itemDataList!['titolo'])),
+                      (itemData['titolo']),
                       fontSize: 18,
                       textColor: AppColors.tawnyBrown)
                 ),

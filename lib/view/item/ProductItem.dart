@@ -24,7 +24,7 @@ class ProductItem extends Item {
               Padding(
                 padding: EdgeInsets.only(bottom: 8),
                 child: Text(
-                  "${itemData!['nome']}",
+                  "${itemData['nome']}",
                   style: TextStyle(
                     color: AppColors.caramelBrown,
                     fontWeight: FontWeight.bold,
@@ -47,7 +47,7 @@ class ProductItem extends Item {
                       Text(
                         style: TextStyle(
                             color: Colors.black, fontWeight: FontWeight.bold),
-                        "${itemData!['quantita']}${itemData!['misura'] == '-'? '': "${itemData!['misura']}"}",
+                        "${itemData['quantita']}${itemData['misura'] == '-'? '': "${itemData['misura']}"}",
                       ), //Quantita Txt
                     ],
                   ),
@@ -63,8 +63,8 @@ class ProductItem extends Item {
                           'Scadenza: ',
                         ), //Scadenza Label
                         Text(
-                          style: CustomDecoration.checkData(itemData!['scadenza']),
-                          "${itemData!['scadenza']}",
+                          style: CustomDecoration.checkData(itemData['scadenza']),
+                          "${itemData['scadenza']}",
                         ), //Scadenza Txt
                       ],
                     ),

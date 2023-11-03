@@ -57,4 +57,42 @@ extension TimestampExtended on Timestamp {
       'time': DateFormat('HH:mm').format(datetime)
     };
   }
+
+  int timeDiffSeconds() {
+    return Timestamp.now().seconds - seconds;
+  }
+
+  String timeDiffToString() {
+    int secondsPassed = timeDiffSeconds();
+    int minutesPassed = secondsPassed ~/ 60;
+    int hoursPassed = minutesPassed ~/ 60;
+    int daysPassed = hoursPassed ~/ 24;
+    int monthsPassed = daysPassed ~/ 30;
+    int yearsPassed = daysPassed ~/ 356;
+    if (secondsPassed < 60) {
+      return 'Adesso';
+    } else if (minutesPassed == 1) {
+      return '1 minuto fa';
+    } else if (minutesPassed >= 2 && minutesPassed <= 59) {
+      return '$minutesPassed minuti fa';
+    } else if (hoursPassed == 1) {
+      return '1 ora fa';
+    } else if (hoursPassed >= 2 && hoursPassed <= 23) {
+      return '$hoursPassed ore fa';
+    } else if (daysPassed == 1) {
+      return '1 giorno fa';
+    } else if (daysPassed >= 2 && daysPassed <= 29) {
+      return '$daysPassed giorni fa';
+    } else if (daysPassed >= 30 && daysPassed <= 59) {
+      return '1 mese fa';
+    } else if (daysPassed >= 60 && daysPassed <= 355) {
+      return '$monthsPassed mesi fa';
+    } else if (yearsPassed == 1) {
+      return '1 anno fa';
+    } else if (yearsPassed >= 2) {
+      return '$yearsPassed anni fa';
+    } else {
+      return '';
+    }
+  }
 }
