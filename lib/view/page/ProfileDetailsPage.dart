@@ -45,7 +45,7 @@ class _ProfileDetailsPage extends State<ProfileDetailsPage> {
                           height: 150,
                           child: ClipRRect(
                               borderRadius: BorderRadius.circular(50.0),
-                              child: data['boolImmagine']?ImageLoader.currentUserImage():Image.asset('assets/images/icon_profile.png')
+                              child: ImageLoader.currentUserImage()
                           ),
 
                         ), //Immagine profilo

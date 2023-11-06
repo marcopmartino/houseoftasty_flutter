@@ -18,15 +18,12 @@ class CustomDrawer extends StatelessWidget {
 
   Drawer getDrawer(BuildContext context) {
 
-    signOut() async{
-      await FirebaseAuth.instance.signOut();
-      if(context.mounted){
-        Navigator.pushAndRemoveUntil(context,
-            MaterialPageRoute(
-                builder: (_) => LoginPage()
-            ),
-                (Route route) => false);
-      }
+    signOut() {
+      Future.wait([FirebaseAuth.instance.signOut()]).whenComplete(() =>
+          Navigator.pushAndRemoveUntil(context,
+              MaterialPageRoute(builder: (_) => HomePage()),
+                  (Route route) => false)
+      );
     }
 
     ListTile homeListTile() {
@@ -118,8 +115,6 @@ class CustomDrawer extends StatelessWidget {
           title: Text('Logout'),
           onTap: () {
             signOut();
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => HomePage()));
           });
     }
 

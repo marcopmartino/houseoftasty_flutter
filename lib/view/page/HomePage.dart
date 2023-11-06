@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:houseoftasty/network/ProductNetwork.dart';
+import 'package:houseoftasty/network/ProfileNetwork.dart';
 import 'package:houseoftasty/network/RecipeNetwork.dart';
+import 'package:houseoftasty/utility/Extensions.dart';
 import 'package:houseoftasty/utility/StreamBuilders.dart';
 import 'package:houseoftasty/view/page/RecipePostDetailsPage.dart';
 import 'package:houseoftasty/view/widget/TextWidgets.dart';
@@ -26,6 +29,14 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+
+  @override
+  void initState() {
+    super.initState();
+    if (!FirebaseAuth.instance.isCurrentUserLoggedIn()) {
+      ProfileNetwork.createDeviceUserIfNotExists();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
