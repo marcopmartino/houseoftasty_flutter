@@ -50,6 +50,10 @@ class ImageLoader {
     return Image.network(fit: BoxFit.cover, await StorageNetwork.getDownloadURL(filepath));
   }
 
+  static Future<Image> getRecipeStorageImage(String recipeId) async {
+    return Image.network(fit: BoxFit.cover, await StorageNetwork.getDownloadURL('immagini_ricette/$recipeId'));
+  }
+
   static FutureBuilder<Image> firebaseStorageImage(String filepath, Image defaultImage) {
     return FutureBuilder<Image>(
         future: _getStorageImage(filepath),

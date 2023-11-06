@@ -38,6 +38,9 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
   late DocumentSnapshot<Object?> _recipeData;
   late DocumentSnapshot<Object?> _creatorData;
 
+  // Immagine della ricetta
+  late Image _recipeImage;
+
   // Stringhe
   late String _recipeSubtitle;
   late String idCreatore;
@@ -68,6 +71,7 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
   final _formKey = GlobalKey<FormState>();
   final _commentSectionTitleKey = GlobalKey();
   final _commentoTextController = TextEditingController();
+  final _scrollController = ScrollController(keepScrollOffset: true);
 
   // Divisore tra le sezioni della vista
   Divider divider = const Divider(
@@ -136,7 +140,6 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
   void createComment() {
     String commentText = _commentoTextController.text.trim();
     if (commentText.isNotEmpty) {
-      setState(() {
         FocusManager.instance.primaryFocus?.unfocus(); // Nascondo la tastiera a schermo
         _commentoTextController.text = ''; // Svuoto il campo di testo
         Comment newComment = Comment(
@@ -145,7 +148,6 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
         );
         _commentCounter++;
         RecipeNetwork.addComment(widget.recipeId, newComment);
-      });
     }
   }
 
@@ -156,11 +158,21 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
     });
   }
 
+  void stopLoading() {
+    // Termino il caricamento
+    setState(() {
+      _initializationCompleted = true;
+    });
+  }
+
   @override
   initState() {
     super.initState();
+
+    // Carico l'immagine della ricetta
+
     Future.wait([RecipeNetwork.getRecipeDetailsOnce(widget.recipeId)]).then(
-            (data) async {
+            (data) {
               _recipeData = data[0];
 
               // Controllo se il creatore della ricetta è l'utente che la sta visualizzando
@@ -209,12 +221,21 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
                       _recipeSubtitle = _creatorData['username'] + ' - $formattedDate alle $formattedTime';
                     }
 
-                    // Termino il caricamento
-                    setState(() {
-                      _initializationCompleted = true;
-                    });
+                    // Carico l'immagine della ricetta
+                    if (_recipeData['boolImmagine']) {
+                      Future.wait([ImageLoader.getRecipeStorageImage(widget.recipeId)]).then(
+                              (data) {
+                                _recipeImage = data[0];
+                                stopLoading();
+                          });
+                    } else {
+                      _recipeImage = ImageLoader.defaultRecipe();
+                      stopLoading();
+                    }
                   }
               );
+
+
             }
     );
 
@@ -233,6 +254,7 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
 
   Widget scaffoldBody(BuildContext context) {
           return SingleChildScrollView(
+            controller: _scrollController,
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -240,7 +262,7 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
                     SizedBox(
                         width: double.infinity,
                         height: 200,
-                        child: ImageLoader.firebaseRecipeStorageImage(widget.recipeId)
+                        child: _recipeImage
                     ),
 
                     // Sezione titolo e informazioni principali
