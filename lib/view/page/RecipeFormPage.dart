@@ -402,6 +402,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
                       boolPubblicata: _pubblicataSwitchValue,
                       boolPostPrivato: _postPrivatoSwitchValue,
                       boolImmagine: boolImmagine,
+                      timestampPubblicazione: _pubblicataSwitchValue ? Timestamp.now() : null
                     ).toDocumentMap());
 
                 // Inserisco l'immagine
