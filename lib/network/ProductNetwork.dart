@@ -1,34 +1,39 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:houseoftasty/utility/Extensions.dart';
 
 import '../Model/Product.dart';
 
 class ProductNetwork{
 
-  static CollectionReference _products =
+  static Future<CollectionReference<Object?>> get _products async =>
     FirebaseFirestore.instance.collection('users')
-      .doc(FirebaseAuth.instance.currentUser?.uid).collection('products');
+      .doc(await DeviceInfo.getCurrentUserIdOrDeviceId()).collection('products');
 
-  static Stream<QuerySnapshot<Object?>> getProductByUserId() {
-    return _products.snapshots();
+  static Stream<QuerySnapshot<Object?>> getCurrentUserProducts() {
+    return DeviceInfo.getQueryStream((userOrDeviceId) =>
+        FirebaseFirestore.instance.collection('users')
+            .doc(userOrDeviceId).collection('products').snapshots()
+    );
   }
 
   static Stream<DocumentSnapshot<Object?>> getProductById(String productId) {
-    return _products.doc(productId).snapshots();
+    return DeviceInfo.getDocumentStream((userOrDeviceId) =>
+        FirebaseFirestore.instance.collection('users')
+            .doc(userOrDeviceId).collection('products').doc(productId).snapshots()
+    );
   }
 
   static Future<String> addProduct(Map<String, dynamic> product) async {
-    DocumentReference doc = await _products.add(product);
+    DocumentReference doc = await (await _products).add(product);
     return doc.id;
   }
 
   static void updateProduct(Product product) async {
-    await _products.doc(product.id).update(product.toMap());
+    await (await _products).doc(product.id).update(product.toMap());
   }
 
   static void deleteProduct(String productId) async {
-    await _products.doc(productId).delete();
+    await (await _products).doc(productId).delete();
   }
-
  }

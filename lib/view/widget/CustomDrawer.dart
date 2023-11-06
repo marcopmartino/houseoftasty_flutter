@@ -103,7 +103,7 @@ class CustomDrawer extends StatelessWidget {
     ListTile loginListTile() {
       return ListTile(
         leading: Icon(Icons.login, size: 30, color: AppColors.tawnyBrown),
-        title: Text('Login'),
+        title: Text('Accedi'),
         onTap: () {
           Navigator.pop(context);
           Navigator.push(context,
@@ -119,7 +119,7 @@ class CustomDrawer extends StatelessWidget {
           onTap: () {
             signOut();
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => LoginPage()));
+                MaterialPageRoute(builder: (context) => HomePage()));
           });
     }
 

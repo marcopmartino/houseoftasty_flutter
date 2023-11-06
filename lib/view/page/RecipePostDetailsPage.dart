@@ -34,13 +34,17 @@ class RecipePostDetailsPage extends StatefulWidget {
 
 class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
 
+  // Snapshot della ricetta e del suo creatore
+  late DocumentSnapshot<Object?> _recipeData;
+  late DocumentSnapshot<Object?> _creatorData;
 
   // Stringhe
   late String _recipeSubtitle;
   late String idCreatore;
-  String currentUserId = FirebaseAuth.instance.currentUserId!;
+  String? currentUserId = FirebaseAuth.instance.currentUserId;
 
   // Booleani
+  bool _isCurrentUserAuthenticated = FirebaseAuth.instance.isCurrentUserLoggedIn();
   bool _isCurrentUserRecipe = false;
   bool _privatePost = false;
   bool _initializationCompleted = false;
@@ -59,9 +63,6 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
   IconData downloadIcon = CupertinoIcons.star_fill;
   Color likeIconColor = AppColors.caramelBrown;
   Color downloadIconColor = AppColors.caramelBrown;
-
-  // Snapshot della ricetta
-  late DocumentSnapshot<Object?> _recipeData;
 
   // Keys e Controllers
   final _formKey = GlobalKey<FormState>();
@@ -139,11 +140,11 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
         FocusManager.instance.primaryFocus?.unfocus(); // Nascondo la tastiera a schermo
         _commentoTextController.text = ''; // Svuoto il campo di testo
         Comment newComment = Comment(
-            userId: currentUserId,
+            userId: currentUserId!,
             text: commentText
         );
-        RecipeNetwork.addComment(widget.recipeId, newComment);
         _commentCounter++;
+        RecipeNetwork.addComment(widget.recipeId, newComment);
       });
     }
   }
@@ -156,8 +157,67 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
   }
 
   @override
-  void initState() {
+  initState() {
     super.initState();
+    Future.wait([RecipeNetwork.getRecipeDetailsOnce(widget.recipeId)]).then(
+            (data) async {
+              _recipeData = data[0];
+
+              // Controllo se il creatore della ricetta è l'utente che la sta visualizzando
+              idCreatore = _recipeData['idCreatore'];
+              _isCurrentUserRecipe = idCreatore == currentUserId;
+
+              // Incremento le visualzzazioni
+              if (!_isCurrentUserRecipe && !_incrementationCompleted) {
+                _incrementationCompleted = true;
+                RecipeNetwork.incrementViews(widget.recipeId);
+              }
+
+              // Estraggo il dato sulla privatezza del post
+              _privatePost = _recipeData['boolPostPrivato'] as bool;
+
+              // Inizializzo i contatori
+              _viewCounter = _recipeData['views'] ?? 0;
+              _likeCounter = _recipeData['likeCounter'] ?? 0;
+              _commentCounter = _recipeData['commentCounter'] ?? 0;
+              _downloadCounter = _recipeData['downloadCounter'] ?? 0;
+
+              // Controllo se l'utente ha già messo like o salvato la ricetta
+              _isLiked = (_recipeData['likes'] as List).contains(idCreatore);
+              _isSaved = (_recipeData['downloads'] as List).contains(idCreatore);
+
+              // Inizializzo le icone
+              if (!_isCurrentUserRecipe) {
+                _isLiked ? setLikedIcon() : setNotLikedIcon();
+                _isSaved ? setSavedIcon() : setNotSavedIcon();
+              }
+
+              Future.wait([ProfileNetwork.getUserInfoOnce(idCreatore)]).then(
+                      (data) {
+                    _creatorData = data[0];
+
+                    // Estraggo data e ora dal Timestamp di Firestore
+                    final Map datetime = (_recipeData['timestampPubblicazione'] as Timestamp)
+                        .toDateTime();
+                    final formattedDate = datetime['date'];
+                    final formattedTime = datetime['time'];
+
+                    // Determino quale testo mostrare come sottotitolo della ricetta
+                    if (_isCurrentUserRecipe) {
+                      _recipeSubtitle = 'Pubblicata in data $formattedDate alle $formattedTime';
+                    } else {
+                      _recipeSubtitle = _creatorData['username'] + ' - $formattedDate alle $formattedTime';
+                    }
+
+                    // Termino il caricamento
+                    setState(() {
+                      _initializationCompleted = true;
+                    });
+                  }
+              );
+            }
+    );
+
   }
 
   @override
@@ -165,68 +225,13 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
     return CustomScaffold(
         title: RecipePostDetailsPage.title,
         resize: true,
-        body: _initializationCompleted ? scaffoldBody() :
-     DocumentStreamBuilder(
-          stream: RecipeNetwork.getRecipeDetails(widget.recipeId),
-          builder: (BuildContext builder, DocumentSnapshot<Object?> data) {
-
-            // Controllo se il creatore della ricetta è l'utente che la sta visualizzando
-            idCreatore = data['idCreatore'];
-            _isCurrentUserRecipe = idCreatore == currentUserId;
-
-            // Incremento le visualzzazioni
-            if (!_isCurrentUserRecipe && !_incrementationCompleted) {
-              _incrementationCompleted = true;
-              RecipeNetwork.incrementViews(widget.recipeId);
-            }
-
-            // Estraggo il dato sulla privatezza del post
-            _privatePost = data['boolPostPrivato'] as bool;
-
-            // Estraggo data e ora dal Timestamp di Firestore
-            final Map datetime = (data['timestampPubblicazione'] as Timestamp)
-                .toDateTime();
-            final formattedDate = datetime['date'];
-            final formattedTime = datetime['time'];
-
-            // Inizializzo i contatori
-            _viewCounter = data['views'] ?? 0;
-            _likeCounter = data['likeCounter'] ?? 0;
-            _commentCounter = data['commentCounter'] ?? 0;
-            _downloadCounter = data['downloadCounter'] ?? 0;
-
-            // Controllo se l'utente ha già messo like o salvato la ricetta
-            _isLiked = (data['likes'] as List).contains(idCreatore);
-            _isSaved = (data['downloads'] as List).contains(idCreatore);
-
-            // Inizializzo le icone
-            if (!_isCurrentUserRecipe) {
-              _isLiked ? setLikedIcon() : setNotLikedIcon();
-              _isSaved ? setSavedIcon() : setNotSavedIcon();
-            }
-
-            // Salvo i dati della ricetta
-            _recipeData = data;
-
-            _initializationCompleted = true;
-
-            // Determino quale testo mostrare come sottotitolo della ricetta
-            if (_isCurrentUserRecipe) {
-              _recipeSubtitle = 'Pubblicata in data $formattedDate alle $formattedTime';
-              return scaffoldBody();
-            } else {
-              return DocumentStreamBuilder(
-                  stream: ProfileNetwork.getUserInfo(idCreatore),
-                  builder: (BuildContext builder, DocumentSnapshot<Object?> profileData) {
-                    _recipeSubtitle = (profileData['username'] + ' - $formattedDate alle $formattedTime');
-                    return scaffoldBody();
-                  });
-            }
-          })
-        );
+        body: _initializationCompleted
+            ? scaffoldBody(context)
+            : Center(child: CircularProgressIndicator(color: AppColors.tawnyBrown))
+    );
   }
 
-  Widget scaffoldBody() {
+  Widget scaffoldBody(BuildContext context) {
           return SingleChildScrollView(
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,7 +250,12 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
                     ),
                     Padding(
                       padding: CustomEdgeInsets.symmetric(horizontal:16), // Spaziatura esterna
-                      child: TextWidget(_recipeSubtitle),
+                      child: _isCurrentUserRecipe
+                        ? TextWidget(_recipeSubtitle)
+                        : GestureDetector(
+                        onTap: () => Navigation.navigate(context, ProfilePage(userId: _recipeData['idCreatore'])),
+                        child: TextWidget(_recipeSubtitle)
+                      )
                     ),
                     Padding(
                       padding: CustomEdgeInsets.exceptTop(16), // Spaziatura esterna
@@ -362,7 +372,16 @@ class _RecipePostDetailsState extends State<RecipePostDetailsPage> {
                         padding: CustomEdgeInsets.exceptBottom(16), // Spaziatura esterna
                         child: TitleWidget('Commenti')
                     ),
-                    _isCurrentUserRecipe ? Container(padding: EdgeInsets.symmetric(vertical: 8)) :
+                    (!_isCurrentUserAuthenticated || _isCurrentUserRecipe) ? Container(
+                      padding: EdgeInsets.only(top: 16),
+                      child: const Divider(
+                        height: 2,
+                        thickness: 2,
+                        indent: 0,
+                        endIndent: 0,
+                        color: AppColors.tawnyBrown,
+                      ),
+                    ) :
                     Form(
                       key: _formKey,
                       child: Padding(

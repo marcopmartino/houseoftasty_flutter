@@ -313,6 +313,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
                 ),
 
                 // Switch Pubblicata
+                if (FirebaseAuth.instance.isCurrentUserLoggedIn())
                 Padding(
                   padding: CustomEdgeInsets.symmetric(horizontal: 32),
                   child: Row(
@@ -392,7 +393,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
 
                 String documentId = await RecipeNetwork.addRecipe(
                     Recipe(
-                      idCreatore: FirebaseAuth.instance.currentUserId!,
+                      idCreatore: (await FirebaseAuth.instance.getCurrentUserIdOrDeviceId()).toString(),
                       titolo: _titoloTextController.text,
                       ingredienti: _ingredientiTextController.text,
                       numPersone: _numPersoneTextController.text.toInt(),
@@ -459,7 +460,7 @@ class _RecipeFormState extends State<RecipeFormPage> {
                 } else {
                   recipe = Recipe(
                     id: _oldData.id,
-                    idCreatore: FirebaseAuth.instance.currentUserId!,
+                    idCreatore: (await FirebaseAuth.instance.getCurrentUserIdOrDeviceId()).toString(),
                     titolo: _titoloTextController.text,
                     ingredienti: _ingredientiTextController.text,
                     numPersone: _numPersoneTextController.text.toInt(),

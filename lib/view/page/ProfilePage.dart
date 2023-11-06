@@ -53,7 +53,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               height: 150,
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(50.0),
-                                  child: data['boolImmagine']?ImageLoader.currentUserImage():Image.asset('assets/images/user_image_default.png')
+                                  child: currentUser ?
+                                  ImageLoader.currentUserImage() :
+                                  ImageLoader.firebaseProfileStorageImage(widget.userId!)
                               ),
 
                             ),

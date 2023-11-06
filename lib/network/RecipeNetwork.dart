@@ -3,7 +3,6 @@ import 'dart:async';
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:houseoftasty/network/RecipeCollectionNetwork.dart';
 import 'package:houseoftasty/utility/Extensions.dart';
 
@@ -11,26 +10,30 @@ import '../model/Recipe.dart';
 import '../model/Comment.dart';
 
 class RecipeNetwork {
+
   static CollectionReference get _recipesReference =>
       FirebaseFirestore.instance.collection('recipes');
 
   static Stream<QuerySnapshot<Object?>> getCurrentUserRecipes() {
-    return _recipesReference.where('idCreatore',
-        isEqualTo: FirebaseAuth.instance.currentUserId).snapshots();
+    return DeviceInfo.getQueryStream((userOrDeviceId) =>
+        _recipesReference.where('idCreatore', isEqualTo: userOrDeviceId).snapshots());
   }
 
-  static Future<QuerySnapshot<Object?>> getCurrentUserRecipesOnce() {
+  static Future<QuerySnapshot<Object?>> getCurrentUserRecipesOnce() async {
     return _recipesReference.where('idCreatore',
-        isEqualTo: FirebaseAuth.instance.currentUserId).get();
+        isEqualTo: await DeviceInfo.getCurrentUserIdOrDeviceId()).get();
   }
 
   static Stream<QuerySnapshot<Object?>> getCurrentUserPublishedRecipes() {
-    return _recipesReference.where('idCreatore',
-        isEqualTo: FirebaseAuth.instance.currentUserId).where('boolPubblicata', isEqualTo: true).snapshots();
+    return DeviceInfo.getQueryStream((userOrDeviceId) =>
+        _recipesReference
+            .where('idCreatore', isEqualTo: userOrDeviceId)
+            .where('boolPubblicata', isEqualTo: true).snapshots());
   }
 
   static Stream<QuerySnapshot<Object?>> getRecipesByIdList(List<String> recipeIds) {
-    return _recipesReference.where(FieldPath.documentId, whereIn: recipeIds).snapshots();
+    return DeviceInfo.getQueryStream((userOrDeviceId) =>
+        _recipesReference.where(FieldPath.documentId, whereIn: recipeIds).snapshots());
   }
 
   static Future<QuerySnapshot<Object?>> getRecipesByIdListOnce(List<String> recipeIds) {
@@ -42,7 +45,7 @@ class RecipeNetwork {
       return getCurrentUserRecipesOnce();
     } else {
       return _recipesReference
-          .where('idCreatore', isEqualTo: FirebaseAuth.instance.currentUserId)
+          .where('idCreatore', isEqualTo: DeviceInfo.getCurrentUserIdOrDeviceId())
           .where(FieldPath.documentId, whereNotIn: recipeIds)
           .get();
     }
@@ -53,19 +56,23 @@ class RecipeNetwork {
     return _recipesReference.doc(recipeId).snapshots();
   }
 
-  static Stream<QuerySnapshot<Object?>> getPublicRecipes(){
-    return _recipesReference.where(
-      Filter.and(
-        Filter('boolPostPrivato', isEqualTo: false),
-        Filter('boolPubblicata', isEqualTo: true),
-        Filter('idCreatore', isNotEqualTo: FirebaseAuth.instance.currentUser!.uid)
+  static Future<DocumentSnapshot<Object?>> getRecipeDetailsOnce(String recipeId) {
+    return _recipesReference.doc(recipeId).get();
+  }
+
+  static Stream<QuerySnapshot<Object?>> getPublicRecipes() {
+    return DeviceInfo.getQueryStream((userOrDeviceId) =>
+        _recipesReference.where(
+            Filter.and(
+                Filter('boolPostPrivato', isEqualTo: false),
+                Filter('boolPubblicata', isEqualTo: true),
+                Filter('idCreatore', isNotEqualTo: userOrDeviceId)
       )
-    ).snapshots();
+    ).snapshots());
   }
 
   static Stream<QuerySnapshot<Object?>> getUserPublicRecipes(String userId) {
-    return _recipesReference
-        .where(
+    return _recipesReference.where(
         Filter.and(
             Filter('boolPostPrivato', isEqualTo: false),
             Filter('boolPubblicata', isEqualTo: true),
@@ -86,6 +93,7 @@ class RecipeNetwork {
   static Future deleteRecipe(String recipeId) async {
     await _recipesReference.doc(recipeId).delete();
     await RecipeCollectionNetwork.removeFromRecipeCollections(recipeId);
+    RecipeCollectionNetwork.removeRecipeFromAllSaveCollections(recipeId);
   }
 
   static Future incrementViews(String recipeId) async {

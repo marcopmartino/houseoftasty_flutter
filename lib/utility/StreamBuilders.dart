@@ -21,6 +21,20 @@ class DocumentStreamBuilder extends StreamBuilder<DocumentSnapshot> {
 
         return builder(context, data);
       });
+
+  DocumentStreamBuilder.futureStream({required future, required Function(BuildContext, DocumentSnapshot<Object?>) builder}) :
+        super(stream: Stream.fromFuture(future), builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Errore - Riprova più tardi'));
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator(color: AppColors.tawnyBrown));
+        }
+
+        final DocumentSnapshot<Object?> data = snapshot.requireData;
+
+        return builder(context, data);
+      });
 }
 
 // StreamBuilder per Collection intere
@@ -28,6 +42,20 @@ class QueryStreamBuilder extends StreamBuilder<QuerySnapshot> {
 
   QueryStreamBuilder({required super.stream, required Function(BuildContext, QuerySnapshot<Object?>) builder}) :
         super(builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Errore - Riprova più tardi'));
+        }
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator(color: AppColors.tawnyBrown));
+        }
+
+        final QuerySnapshot<Object?> data = snapshot.requireData;
+
+        return builder(context, data);
+      });
+
+  QueryStreamBuilder.futureStream({required future, required Function(BuildContext, QuerySnapshot<Object?>) builder}) :
+        super(stream: Stream.fromFuture(future), builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text('Errore - Riprova più tardi'));
         }

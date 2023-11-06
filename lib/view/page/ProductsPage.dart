@@ -29,7 +29,7 @@ class _ProductsPageState extends State<ProductsPage> {
       title: ProductsPage.title,
       body:
       ListViewStreamBuilder(
-          stream: ProductNetwork.getProductByUserId(),
+          stream: ProductNetwork.getCurrentUserProducts(),
           itemType: ItemType.PRODUCT,
           scale: 1.0,
           onTap: (QueryDocumentSnapshot<Object?> product) {

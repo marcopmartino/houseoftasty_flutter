@@ -40,7 +40,7 @@ class ProductItem extends Item {
                       Text(
                         style: TextStyle(
                           color: Colors.black,
-                          fontWeight: FontWeight.w300,
+                          fontWeight: FontWeight.normal,
                         ),
                         'Quantità: ',
                       ), //Quantita Label
@@ -58,7 +58,7 @@ class ProductItem extends Item {
                         Text(
                           style: TextStyle(
                             color: Colors.black,
-                            fontWeight: FontWeight.w200,
+                            fontWeight: FontWeight.normal,
                           ),
                           'Scadenza: ',
                         ), //Scadenza Label

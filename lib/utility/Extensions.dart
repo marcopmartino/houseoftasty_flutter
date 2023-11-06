@@ -1,5 +1,6 @@
-
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
@@ -8,7 +9,42 @@ extension FirebaseAuthExtended on FirebaseAuth {
   String? get currentUserId => currentUser?.uid;
   String getCurrentUserIdOrEmptyString() => currentUserId ?? '';
   String getCurrentUserIdOrNullString() => currentUserId ?? 'null';
+  Future<String?> getCurrentUserIdOrDeviceId() async {
+    return currentUserId ?? await DeviceInfo.deviceId;
+  }
   bool isCurrentUserLoggedIn() => currentUser != null;
+}
+
+extension DeviceInfo on DeviceInfoPlugin {
+
+  static Stream<QuerySnapshot<Object?>> getQueryStream(
+      Stream<QuerySnapshot<Object?>> Function(String? userOrDeviceId) queryStream
+      ) async* {
+    yield* queryStream(await getCurrentUserIdOrDeviceId());
+}
+
+  static Stream<DocumentSnapshot<Object?>> getDocumentStream(
+      Stream<DocumentSnapshot<Object?>> Function(String? userOrDeviceId) documentStream
+      ) async* {
+    yield* documentStream(await getCurrentUserIdOrDeviceId());
+  }
+
+  static Future<String?> getCurrentUserIdOrDeviceId() async {
+    return FirebaseAuth.instance.currentUserId ?? await deviceId;
+  }
+
+  static Future<String?> get deviceId async {
+    var deviceInfo = DeviceInfoPlugin();
+    if (Platform.isIOS) { // import 'dart:io'
+      var iosDeviceInfo = await deviceInfo.iosInfo;
+      return iosDeviceInfo.identifierForVendor; // unique ID on iOS
+    } else if(Platform.isAndroid) {
+      var androidDeviceInfo = await deviceInfo.androidInfo;
+      return androidDeviceInfo.androidId; // unique ID on Android
+    }
+
+    return null;
+  }
 }
 
 // Extension per int

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:houseoftasty/view/item/RecipeHomePreviewItem.dart';
 import 'package:houseoftasty/view/item/RecipePostItem.dart';
 import '../view/item/CommentItem.dart';
 import '../view/item/ProductItem.dart';
@@ -41,6 +42,8 @@ class ListViewBuilder extends StatelessWidget {
         return RecipeCollectionItem(itemData: itemData);
       case ItemType.RECIPE_COLLECTION_FORM:
         return RecipeCollectionFormItem(itemData: itemData);
+      case ItemType.RECIPE_HOME_PREVIEW:
+        return RecipeHomePreviewItem(itemData: itemData);
       case ItemType.PRODUCT:
         return ProductItem(itemData: itemData);
       case ItemType.COMMENT:

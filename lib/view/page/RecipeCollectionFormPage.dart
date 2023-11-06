@@ -242,6 +242,7 @@ class _RecipeCollectionFormState extends State<RecipeCollectionFormPage> {
                   future: RecipeNetwork.getRecipesByIdListOnce(_recipeIds),
                   scale: 0.0,
                   itemType: ItemType.RECIPE_COLLECTION_FORM,
+                  shrinkWrap: true,
                   onTap: (QueryDocumentSnapshot<Object?> recipe) {
 
                     showDialog(context: context, builder: (BuildContext context) {
