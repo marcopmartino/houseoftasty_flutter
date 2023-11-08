@@ -17,6 +17,12 @@ class ProductNetwork{
     );
   }
 
+  static Future<QuerySnapshot<Object?>> getCurrentUserProductsOnce() async {
+    var id = await DeviceInfo.getCurrentUserIdOrDeviceId();
+    return FirebaseFirestore.instance.collection('users')
+            .doc(id).collection('products').get();
+  }
+
   static Stream<DocumentSnapshot<Object?>> getProductById(String productId) {
     return DeviceInfo.getDocumentStream((userOrDeviceId) =>
         FirebaseFirestore.instance.collection('users')

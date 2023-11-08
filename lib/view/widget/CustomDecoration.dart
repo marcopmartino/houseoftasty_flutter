@@ -163,7 +163,7 @@ class CustomDecoration {
       return (date.difference(now).inHours / 24).round();
     }
     diff = daysBetween(now, date);
-    print(diff);
+
     if(diff<0){
       return TextStyle(
           color: Colors.red,
