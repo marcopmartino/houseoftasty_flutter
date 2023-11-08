@@ -177,7 +177,7 @@ class _ProfileEditPage extends State<ProfileEditPage> {
                               height: 150,
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(50.0),
-                                  child: _boolImmagine ? ImageLoader.currentUserImage():Image.asset('assets/images/icon_profile.png')
+                                  child: _boolImmagine ? ImageLoader.currentUserImage():Image.asset('assets/images/user_image_default.png')
                               ),
                             ),
                             Column(

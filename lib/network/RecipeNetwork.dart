@@ -40,12 +40,12 @@ class RecipeNetwork {
     return _recipesReference.where(FieldPath.documentId, whereIn: recipeIds).get();
   }
 
-  static Future<QuerySnapshot<Object?>> getRecipesNotInIdListOnce(List<String> recipeIds) {
+  static Future<QuerySnapshot<Object?>> getRecipesNotInIdListOnce(List<String> recipeIds) async {
     if (recipeIds.isEmpty) {
       return getCurrentUserRecipesOnce();
     } else {
       return _recipesReference
-          .where('idCreatore', isEqualTo: DeviceInfo.getCurrentUserIdOrDeviceId())
+          .where('idCreatore', isEqualTo: await DeviceInfo.getCurrentUserIdOrDeviceId())
           .where(FieldPath.documentId, whereNotIn: recipeIds)
           .get();
     }
